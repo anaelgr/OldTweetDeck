@@ -41,11 +41,14 @@ function createModal(html, className, onclose, canclose) {
 }
 
 async function getNotifications() {
-    let notifs = await fetch('https://oldtd.org/notifications.json?t='+Date.now()).then(r => r.json());
-    let readNotifs = localStorage.getItem('readNotifications') ? JSON.parse(localStorage.getItem('readNotifications')) : [];
-    let notifsToDisplay = notifs.filter(notif => !readNotifs.includes(notif.id));
-
-    return notifsToDisplay;
+    try {
+        let notifs = await fetch('https://oldtd.org/notifications.json?t='+Date.now()).then(r => r.json());
+        let readNotifs = localStorage.getItem('readNotifications') ? JSON.parse(localStorage.getItem('readNotifications')) : [];
+        let notifsToDisplay = notifs.filter(notif => !readNotifs.includes(notif.id));
+        return notifsToDisplay;
+    } catch (e) {
+        return [];
+    }
 }
 function maxVersionCheck(ver, maxVer) {
     let verArr = ver.split('.');
@@ -96,8 +99,8 @@ async function showNotifications() {
     localStorage.OTDnotifsReadOnce = '1';
 }
 
-let style = document.createElement('style');
-style.innerHTML = /*css*/`
+// Optimized CSS injection: inject immediately instead of setTimeout
+const styleContent = /*css*/`
 .otd-modal {
     position: fixed;
     z-index: 200;
@@ -167,8 +170,21 @@ html.dark .otd-modal-content {
 }
 `;
 
-setTimeout(() => {
+// Inject style immediately if document is ready, or wait for it
+if (document.head) {
+    let style = document.createElement('style');
+    style.innerHTML = styleContent;
     document.head.appendChild(style);
-}, 1000);
+} else {
+    // If running at document_start, head might not be ready (though typically it is created early)
+    // Observer or simple fallback
+    document.addEventListener('DOMContentLoaded', () => {
+        let style = document.createElement('style');
+        style.innerHTML = styleContent;
+        document.head.appendChild(style);
+    });
+}
+
+// Show notifications after a short delay to allow UI to settle
 setTimeout(showNotifications, 2000);
 setInterval(showNotifications, 60000 * 60);
