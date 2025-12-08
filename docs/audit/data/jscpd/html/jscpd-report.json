@@ -1,0 +1,250 @@
+{
+  "statistics": {
+    "detectionDate": "2025-12-08T20:05:16.976Z",
+    "formats": {
+      "markup": {
+        "sources": {
+          "files/index.html": {
+            "lines": 43,
+            "tokens": 475,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 43,
+          "tokens": 475,
+          "sources": 1,
+          "clones": 0,
+          "duplicatedLines": 0,
+          "duplicatedTokens": 0,
+          "percentage": 0,
+          "percentageTokens": 0,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      },
+      "json": {
+        "sources": {
+          "files/decider.json": {
+            "lines": 100,
+            "tokens": 689,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 100,
+          "tokens": 689,
+          "sources": 1,
+          "clones": 0,
+          "duplicatedLines": 0,
+          "duplicatedTokens": 0,
+          "percentage": 0,
+          "percentageTokens": 0,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      },
+      "javascript": {
+        "sources": {
+          "src/notifications.js": {
+            "lines": 173,
+            "tokens": 1365,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/injection.js": {
+            "lines": 208,
+            "tokens": 2014,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/destroyer.js": {
+            "lines": 56,
+            "tokens": 445,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/content.js": {
+            "lines": 15,
+            "tokens": 247,
+            "sources": 1,
+            "clones": 0,
+            "duplicatedLines": 0,
+            "duplicatedTokens": 0,
+            "percentage": 0,
+            "percentageTokens": 0,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/challenge.js": {
+            "lines": 210,
+            "tokens": 2133,
+            "sources": 1,
+            "clones": 2,
+            "duplicatedLines": 30,
+            "duplicatedTokens": 308,
+            "percentage": 14.29,
+            "percentageTokens": 14.44,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/background3.js": {
+            "lines": 34,
+            "tokens": 398,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 29,
+            "duplicatedTokens": 341,
+            "percentage": 85.29,
+            "percentageTokens": 85.68,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          },
+          "src/background.js": {
+            "lines": 141,
+            "tokens": 1440,
+            "sources": 1,
+            "clones": 1,
+            "duplicatedLines": 29,
+            "duplicatedTokens": 341,
+            "percentage": 20.57,
+            "percentageTokens": 23.68,
+            "newDuplicatedLines": 0,
+            "newClones": 0
+          }
+        },
+        "total": {
+          "lines": 837,
+          "tokens": 8042,
+          "sources": 7,
+          "clones": 2,
+          "duplicatedLines": 44,
+          "duplicatedTokens": 495,
+          "percentage": 5.26,
+          "percentageTokens": 6.16,
+          "newDuplicatedLines": 0,
+          "newClones": 0
+        }
+      }
+    },
+    "total": {
+      "lines": 980,
+      "tokens": 9206,
+      "sources": 9,
+      "clones": 2,
+      "duplicatedLines": 44,
+      "duplicatedTokens": 495,
+      "percentage": 4.49,
+      "percentageTokens": 5.38,
+      "newDuplicatedLines": 0,
+      "newClones": 0
+    }
+  },
+  "duplicates": [
+    {
+      "format": "javascript",
+      "lines": 16,
+      "fragment": "{\n            solverIframe.contentWindow.postMessage({ action: 'solve', id, path, method }, '*');\n            setTimeout(() => {\n                if(solveCallbacks[id]) {\n                    // try again\n                    solverIframe.contentWindow.postMessage({ action: 'solve', id, path, method }, '*');\n                }\n            }, 5000);\n            setTimeout(() => {\n                if(solveCallbacks[id]) {\n                    solveCallbacks[id].reject('Solver timed out');\n                    delete solveCallbacks[id];\n                }\n            }, 20000);\n        }\n    }",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/challenge.js",
+        "start": 110,
+        "end": 125,
+        "startLoc": {
+          "line": 110,
+          "column": 2,
+          "position": 1090
+        },
+        "endLoc": {
+          "line": 125,
+          "column": 2,
+          "position": 1244
+        }
+      },
+      "secondFile": {
+        "name": "src/challenge.js",
+        "start": 95,
+        "end": 109,
+        "startLoc": {
+          "line": 95,
+          "column": 2,
+          "position": 930
+        },
+        "endLoc": {
+          "line": 109,
+          "column": 2,
+          "position": 1082
+        }
+      }
+    },
+    {
+      "format": "javascript",
+      "lines": 30,
+      "fragment": "(request, sender, sendResponse) => {\n    if(request.action === 'setcookie') {\n        chrome.cookies.getAll({url: \"https://x.com\"}, async cookies => {\n            console.log('setcookie', cookies);\n            chrome.tabs.query({ active: true, lastFocusedWindow: true }, tab => {\n                tab = tab[0];\n                chrome.cookies.getAllCookieStores(async cookieStores => {\n                    console.log('cookieStores', cookieStores, tab);\n                    const storeId = cookieStores?.find( cookieStore => cookieStore?.tabIds?.indexOf(tab?.id) !== -1)?.id;\n\n                    for(let cookie of cookies) {\n                        chrome.cookies.set({\n                            url: \"https://twitter.com\",\n                            name: cookie.name,\n                            value: cookie.value,\n                            expirationDate: cookie.expirationDate,\n                            domain: \".twitter.com\",\n                            sameSite: cookie.sameSite,\n                            secure: cookie.secure,\n                            httpOnly: cookie.httpOnly,\n                            storeId\n                        }, () => {\n                            console.log('set cookie', cookie, storeId);\n                        });\n                    }\n                });\n            });\n        });\n    } else if(request.action === 'getcookie') {\n        chrome.cookies.getAll",
+      "tokens": 0,
+      "firstFile": {
+        "name": "src/background.js",
+        "start": 107,
+        "end": 136,
+        "startLoc": {
+          "line": 107,
+          "column": 2,
+          "position": 1046
+        },
+        "endLoc": {
+          "line": 136,
+          "column": 7,
+          "position": 1387
+        }
+      },
+      "secondFile": {
+        "name": "src/background3.js",
+        "start": 1,
+        "end": 30,
+        "startLoc": {
+          "line": 1,
+          "column": 2,
+          "position": 8
+        },
+        "endLoc": {
+          "line": 30,
+          "column": 4,
+          "position": 349
+        }
+      }
+    }
+  ],
+  "filename": "/home/engine/project/node_modules/@jscpd/html-reporter/dist/templates/main.pug"
+}

@@ -4,7 +4,11 @@
   "description": "Returns old TweetDeck!",
   "main": "pack.js",
   "scripts": {
-    "build": "node pack.js"
+    "build": "node pack.js",
+    "audit:lint": "eslint src/**/*.js --output-file docs/audit/data/eslint.json --format json",
+    "audit:dup": "jscpd src files --reporters html,json --output docs/audit/data/jscpd",
+    "audit:plato": "es6-plato -r -d docs/audit/data/plato src",
+    "audit:complexity": "node scripts/audit-complexity.js"
   },
   "repository": {
     "type": "git",
@@ -25,5 +29,15 @@
   "homepage": "https://github.com/dimdenGD/OldTweetDeck#readme",
   "dependencies": {
     "adm-zip": "^0.5.10"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "es6-plato": "^1.2.3",
+    "eslint": "^9.39.1",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-unused-imports": "^4.3.0",
+    "globals": "^16.5.0",
+    "jscpd": "^4.0.5",
+    "typhonjs-escomplex": "^0.1.0"
   }
 }

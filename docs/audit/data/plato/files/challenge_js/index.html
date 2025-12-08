@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - challenge.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet" type="text/css">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet" type="text/css">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet" type="text/css">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet" type="text/css">
+  <link href="../../assets/css/plato.css" rel="stylesheet" type="text/css">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="https://github.com/the-simian/es6-plato">ES6 Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+      <li class="active">
+        <a href="display.html">Summary Display</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>challenge.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">68.37</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">211</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">42.38</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">2.30</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">let solveId = 0;
+let solveCallbacks = {};
+let solverErrored = false;
+let ready = false;
+
+let solverIframe = document.createElement(&#039;iframe&#039;);
+solverIframe.style.position = &#039;absolute&#039;;
+solverIframe.width = &#039;0px&#039;;
+solverIframe.height = &#039;0px&#039;;
+solverIframe.style.border = &#039;none&#039;;
+solverIframe.style.opacity = 0;
+solverIframe.style.pointerEvents = &#039;none&#039;;
+solverIframe.tabIndex = -1;
+solverIframe.src = &quot;https://tweetdeck.dimden.dev/solver.html?4&quot;; // check source code of that page to make sure its safe if u dont trust it
+fetch(solverIframe.src).catch(() =&gt; {
+    console.error(&quot;Cannot load solver iframe&quot;);
+    solverErrored = true;
+    for(let id in solveCallbacks) {
+        solveCallbacks[id].reject(&#039;Solver errored&#039;);
+        delete solveCallbacks[id];
+    }
+});
+let injectedBody = document.getElementById(&#039;injected-body&#039;);
+if(injectedBody) injectedBody.appendChild(solverIframe);
+else {
+    let int = setInterval(() =&gt; {
+        injectedBody = document.getElementById(&#039;injected-body&#039;);
+        if(injectedBody) {
+            clearInterval(int);
+            injectedBody.appendChild(solverIframe);
+        }
+    }, 50);
+}
+
+function uuidV4() {
+    const uuid = new Array(36);
+    for (let i = 0; i &lt; 36; i++) {
+      uuid[i] = Math.floor(Math.random() * 16);
+    }
+    uuid[14] = 4; // set bits 12-15 of time-high-and-version to 0100
+    uuid[19] = uuid[19] &amp;= ~(1 &lt;&lt; 2); // set bit 6 of clock-seq-and-reserved to zero
+    uuid[19] = uuid[19] |= (1 &lt;&lt; 3); // set bit 7 of clock-seq-and-reserved to one
+    uuid[8] = uuid[13] = uuid[18] = uuid[23] = &#039;-&#039;;
+    return uuid.map((x) =&gt; x.toString(16)).join(&#039;&#039;);
+}
+
+async function readCryptoKey() {
+    return new Promise((resolve, reject) =&gt; {
+        let request = indexedDB.open(&quot;localforage&quot;);
+
+        request.onerror = function(event) {
+            reject(event);
+        };
+
+        request.onsuccess = function(event) {
+            const db = event.target.result;
+
+            // Open a transaction to access the keyvaluepairs object store
+            if (db.objectStoreNames.contains(&#039;keyvaluepairs&#039;)) {
+                const transaction = db.transaction([&#039;keyvaluepairs&#039;], &#039;readonly&#039;);
+                const objectStore = transaction.objectStore(&#039;keyvaluepairs&#039;);
+            
+                objectStore.openCursor().onsuccess = function(event) {
+                    const cursor = event.target.result;
+                    if (cursor) {
+                        // Check if the key matches the pattern
+                        const key = cursor.key;
+                        if (key.startsWith(&#039;device:rweb.dmCryptoKeys&#039;)) {
+                            resolve(cursor.value);
+                        }
+                
+                        // Move to the next entry
+                        cursor.continue();
+                    } else {
+                        // No more entries, reject the promise
+                        reject(&quot;No key found&quot;);
+                    }
+                };
+            } else {
+                reject(&quot;No key found&quot;);
+            }
+        };
+    });
+}
+
+function solveChallenge(path, method) {
+    return new Promise((resolve, reject) =&gt; {
+        if(solverErrored) {
+            reject(&#039;Solver errored&#039;);
+            return;
+        }
+        let id = solveId++;
+        solveCallbacks[id] = { resolve, reject, time: Date.now() };
+        if(!solverIframe.contentWindow) {
+            solverIframe.addEventListener(&#039;load&#039;, () =&gt; {
+                solverIframe.contentWindow.postMessage({ action: &#039;solve&#039;, id, path, method }, &#039;*&#039;);
+                setTimeout(() =&gt; {
+                    if(solveCallbacks[id]) {
+                        // try again
+                        solverIframe.contentWindow.postMessage({ action: &#039;solve&#039;, id, path, method }, &#039;*&#039;);
+                    }
+                }, 5000);
+                setTimeout(() =&gt; {
+                    if(solveCallbacks[id]) {
+                        solveCallbacks[id].reject(&#039;Solver timed out&#039;);
+                        delete solveCallbacks[id];
+                    }
+                }, 20000);
+            });
+        } else {
+            solverIframe.contentWindow.postMessage({ action: &#039;solve&#039;, id, path, method }, &#039;*&#039;);
+            setTimeout(() =&gt; {
+                if(solveCallbacks[id]) {
+                    // try again
+                    solverIframe.contentWindow.postMessage({ action: &#039;solve&#039;, id, path, method }, &#039;*&#039;);
+                }
+            }, 5000);
+            setTimeout(() =&gt; {
+                if(solveCallbacks[id]) {
+                    solveCallbacks[id].reject(&#039;Solver timed out&#039;);
+                    delete solveCallbacks[id];
+                }
+            }, 20000);
+        }
+    });
+}
+
+window.addEventListener(&#039;message&#039;, e =&gt; {
+    if(e.source !== solverIframe.contentWindow) return;
+    let data = e.data;
+    if(data.action === &#039;solved&#039;) {
+        let { id, result } = data;
+        if(solveCallbacks[id]) {
+            solveCallbacks[id].resolve(result);
+            delete solveCallbacks[id];
+        }
+    } else if(data.action === &#039;error&#039;) {
+        let { id, error } = data;
+        if(solveCallbacks[id]) {
+            solveCallbacks[id].reject(error);
+            delete solveCallbacks[id];
+        }
+    } else if(data.action === &#039;initError&#039;) {
+        console.error(&#039;Solver init error:&#039;, data.error);
+        solverErrored = true;
+        for(let id in solveCallbacks) {
+            solveCallbacks[id].reject(&#039;Solver errored&#039;);
+            delete solveCallbacks[id];
+        }
+    } else if(data.action === &#039;ready&#039;) {
+        ready = true;
+    }
+});
+
+(async () =&gt; {
+    try {
+        try {
+            let cryptoKey = await readCryptoKey();
+            if(cryptoKey) {
+                localStorage.device_id = cryptoKey.deviceId;
+            } else if(!localStorage.device_id) {
+                localStorage.device_id = uuidV4();
+            }
+        } catch(e) {
+            console.warn(`Error during device id generation:`, e);
+            if(!localStorage.device_id) {
+                localStorage.device_id = uuidV4();
+            }
+        }
+
+        let homepageData = await fetch(`https://${location.hostname}/`).then(res =&gt; res.text());
+        let dom = new DOMParser().parseFromString(homepageData, &#039;text/html&#039;);
+        let anims = Array.from(dom.querySelectorAll(&#039;svg[id^=&quot;loading-x&quot;]&#039;)).map(svg =&gt; svg.outerHTML);
+
+        let vendorCode = homepageData.match(/vendor.(\w+).js&quot;/)[1];
+        let challengeCode = homepageData.match(/&quot;ondemand.s&quot;:&quot;(\w+)&quot;/)[1];
+        let challengeData = await fetch(`https://abs.twimg.com/responsive-web/client-web/ondemand.s.${challengeCode}a.js`).then(res =&gt; res.text());
+        console.log(`Successfully fetched challenge data (${challengeCode} / ${challengeData.length})`);
+        let vendorData = await fetch(`https://abs.twimg.com/responsive-web/client-web/vendor.${vendorCode}.js`).then(res =&gt; res.text());
+        console.log(`Successfully fetched vendor data (${vendorCode} / ${vendorData.length})`);
+
+        function sendInit() {
+            console.log(&#039;Sending init&#039;);
+            solverIframe.contentWindow.postMessage({
+                action: &#039;init&#039;,
+                challenge: challengeData,
+                vendor: vendorData,
+                anims,
+                verificationCode: dom.querySelector(&#039;meta[name=&quot;twitter-site-verification&quot;]&#039;).content,
+            }, &#039;*&#039;);
+        }
+        if(solverIframe.contentWindow) {
+            sendInit();
+            setTimeout(() =&gt; {
+                if(!ready) {
+                    sendInit();
+                }
+            }, 2500);
+        } else {
+            setTimeout(() =&gt; {
+                if(!ready) {
+                    sendInit();
+                }
+            }, 2500);
+            solverIframe.addEventListener(&#039;load&#039;, () =&gt; sendInit());
+        }
+    } catch (e) {
+        console.error(`Error during challenge:`);
+        console.error(e);
+    }
+})()</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>
