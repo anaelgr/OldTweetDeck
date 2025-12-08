@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Plato - injection.js</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--[if lt IE 9]>
+  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+
+  <link href="../../assets/css/vendor/morris.css" rel="stylesheet" type="text/css">
+  <link href="../../assets/css/vendor/bootstrap.css" rel="stylesheet" type="text/css">
+  <link href="../../assets/css/vendor/font-awesome.css" rel="stylesheet" type="text/css">
+  <link href="../../assets/css/vendor/codemirror.css" rel="stylesheet" type="text/css">
+  <link href="../../assets/css/plato.css" rel="stylesheet" type="text/css">
+  <link href="../../assets/css/plato-file.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="https://github.com/the-simian/es6-plato">ES6 Plato on Github</a>
+    <ul class="nav navbar-nav">
+      <li>
+        <a href="../../index.html">Report Home</a>
+      </li>
+      <li class="active">
+        <a href="display.html">Summary Display</a>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="jumbotron">
+  <div class="container">
+    <h1>injection.js</h1>
+  </div>
+</div>
+
+<div class="container aggregate-stats">
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Maintainability <a href="http://blogs.msdn.com/b/codeanalysis/archive/2007/11/20/maintainability-index-range-and-meaning.aspx"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="A value between 0 and 100 that represents the relative ease of maintaining the code. A high value means better maintainability." data-original-title="Maintainability Index"  data-container="body"></i></a></h2>
+      <p class="stat">65.88</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Lines of code <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h2>
+      <p class="stat">209</p>
+    </div>
+  </div>
+  <div class="row historical">
+    <div class="col-md-6">
+      <p id="chart_historical_maint" class="chart"></p>
+    </div>
+    <div class="col-md-6">
+      <p id="chart_historical_sloc" class="chart"></p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h2 class="header">Difficulty  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="The difficulty measure is related to the difficulty of the program to write or understand." data-original-title="Difficulty" data-container="body"></i></a></h2>
+      <p class="stat">43.74</p>
+    </div>
+    <div class="col-md-6">
+      <h2 class="header">Estimated Errors  <a href="http://en.wikipedia.org/wiki/Halstead_complexity_measures"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Halstead's delivered bugs is an estimate for the number of errors in the implementation." data-original-title="Delivered Bugs" data-container="body"></i></a></h2>
+      <p class="stat">2.47</p>
+    </div>
+  </div>
+</div>
+
+<div class="container charts">
+  <div class="row">
+    <h2 class="header">Function weight</h2>
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h3 class="chart-header">By Complexity <a href="http://en.wikipedia.org/wiki/Cyclomatic_complexity"><i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="This metric counts the number of distinct paths through a block of code. Lower values are better." data-original-title="Cyclomatic Complexity" data-container="body"></i></a></h3>
+      <div id="fn-by-complexity" class="stat"></div>
+    </div>
+    <div class="col-md-6">
+      <h3 class="chart-header">By SLOC  <i class="icon icon-info-sign" rel="popover" data-placement="top" data-trigger="hover" data-content="Source Lines of Code / Logical Lines of Code" data-original-title="SLOC/LSLOC" data-container="body"></i></h3>
+      <div id="fn-by-sloc" class="stat"></div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+    <textarea id="file-source" class="col-md-12">let extId;
+let isFirefox = navigator.userAgent.indexOf(&#039;Firefox&#039;) &gt; -1;
+let cookie = null;
+let otdtoken = null;
+
+if(!window.chrome) window.chrome = {};
+if(!window.chrome.runtime) window.chrome.runtime = {};
+window.chrome.runtime.getURL = url =&gt; {
+    if(!url.startsWith(&#039;/&#039;)) url = `/${url}`;
+    return `${isFirefox ? &#039;moz-extension://&#039; : &#039;chrome-extension://&#039;}${extId}${url}`;   
+}
+window.addEventListener(&#039;message&#039;, e =&gt; {
+    if(e.data.extensionId) {
+        console.log(&quot;got extensionId&quot;, e.data.extensionId);
+        extId = e.data.extensionId;
+        main();
+    } else if(e.data.cookie) {
+        cookie = e.data.cookie;
+    } else if(e.data.token) {
+        console.log(&quot;got otdtoken&quot;);
+        otdtoken = e.data.token;
+    }
+});
+window.postMessage(&#039;extensionId&#039;, &#039;*&#039;);
+window.postMessage(&#039;cookie&#039;, &#039;*&#039;);
+window.postMessage(&#039;getotdtoken&#039;, &#039;*&#039;);
+
+async function main() {
+    let html = await fetch(chrome.runtime.getURL(&#039;/files/index.html&#039;)).then(r =&gt; r.text());
+    document.documentElement.innerHTML = html;
+
+    let [challenge_js, interception_js, vendor_js, bundle_js, bundle_css, twitter_text] =
+        await Promise.allSettled([
+            fetch(chrome.runtime.getURL(&quot;/src/challenge.js&quot;)).then(r =&gt; r.text()),
+            fetch(chrome.runtime.getURL(&quot;/src/interception.js&quot;)).then(r =&gt; r.text()),
+            fetch(chrome.runtime.getURL(&quot;/files/vendor.js&quot;)).then(r =&gt; r.text()),
+            fetch(chrome.runtime.getURL(&quot;/files/bundle.js&quot;)).then(r =&gt; r.text()),
+            fetch(chrome.runtime.getURL(&quot;/files/bundle.css&quot;)).then(r =&gt; r.text()),
+            fetch(chrome.runtime.getURL(&quot;/files/twitter-text.js&quot;)).then(r =&gt; r.text()),
+        ]);
+    if (!localStorage.getItem(&quot;OTDalwaysUseLocalFiles&quot;)) {
+        const [
+            remote_challenge_js_req,
+            remote_interception_js_req,
+            remote_vendor_js_req,
+            remote_bundle_js_req,
+            remote_bundle_css_req,
+            remote_twitter_text_req,
+        ] = await Promise.allSettled([
+            fetch(&quot;https://raw.githubusercontent.com/dimdenGD/OldTweetDeck/main/src/challenge.js&quot;),
+            fetch(&quot;https://raw.githubusercontent.com/dimdenGD/OldTweetDeck/main/src/interception.js&quot;),
+            fetch(&quot;https://raw.githubusercontent.com/dimdenGD/OldTweetDeck/main/files/vendor.js&quot;),
+            fetch(&quot;https://raw.githubusercontent.com/dimdenGD/OldTweetDeck/main/files/bundle.js&quot;),
+            fetch(&quot;https://raw.githubusercontent.com/dimdenGD/OldTweetDeck/main/files/bundle.css&quot;),
+            fetch(&quot;https://raw.githubusercontent.com/dimdenGD/OldTweetDeck/main/files/twitter-text.js&quot;),
+        ]);
+        
+        if(
+            (remote_challenge_js_req.value &amp;&amp; remote_challenge_js_req.value.ok) ||
+            (remote_interception_js_req.value &amp;&amp; remote_interception_js_req.value.ok) || 
+            (remote_vendor_js_req.value &amp;&amp; remote_vendor_js_req.value.ok) ||
+            (remote_bundle_js_req.value &amp;&amp; remote_bundle_js_req.value.ok) ||
+            (remote_bundle_css_req.value &amp;&amp; remote_bundle_css_req.value.ok) ||
+            (remote_twitter_text_req.value &amp;&amp; remote_twitter_text_req.value.ok)
+        ) {
+            const [
+                remote_challenge_js,
+                remote_interception_js,
+                remote_vendor_js,
+                remote_bundle_js,
+                remote_bundle_css,
+                remote_twitter_text,
+            ] = await Promise.allSettled([
+                remote_challenge_js_req.value.text(),
+                remote_interception_js_req.value.text(),
+                remote_vendor_js_req.value.text(),
+                remote_bundle_js_req.value.text(),
+                remote_bundle_css_req.value.text(),
+                remote_twitter_text_req.value.text(),
+            ]);
+
+            if (
+                remote_challenge_js_req.value &amp;&amp;
+                remote_challenge_js_req.value.ok &amp;&amp;
+                remote_challenge_js.status === &quot;fulfilled&quot; &amp;&amp;
+                remote_challenge_js.value.length &gt; 30
+            ) {
+                challenge_js = remote_challenge_js;
+                console.log(&quot;Using remote challenge.js&quot;);
+            }
+
+            if (
+                remote_interception_js_req.value &amp;&amp;
+                remote_interception_js_req.value.ok &amp;&amp;
+                remote_interception_js.status === &quot;fulfilled&quot; &amp;&amp;
+                remote_interception_js.value.length &gt; 30
+            ) {
+                interception_js = remote_interception_js;
+                console.log(&quot;Using remote interception.js&quot;);
+            }
+            if (
+                remote_vendor_js_req.value &amp;&amp;
+                remote_vendor_js_req.value.ok &amp;&amp;
+                remote_vendor_js.status === &quot;fulfilled&quot; &amp;&amp;
+                remote_vendor_js.value.length &gt; 30
+            ) {
+                vendor_js = remote_vendor_js;
+                console.log(&quot;Using remote vendor.js&quot;);
+            }
+            if (
+                remote_bundle_js_req.value &amp;&amp;
+                remote_bundle_js_req.value.ok &amp;&amp;
+                remote_bundle_js.status === &quot;fulfilled&quot; &amp;&amp;
+                remote_bundle_js.value.length &gt; 30
+            ) {
+                bundle_js = remote_bundle_js;
+                console.log(&quot;Using remote bundle.js&quot;);
+            }
+            if (
+                remote_bundle_css_req.value &amp;&amp;
+                remote_bundle_css_req.value.ok &amp;&amp;
+                remote_bundle_css.status === &quot;fulfilled&quot; &amp;&amp;
+                remote_bundle_css.value.length &gt; 30
+            ) {
+                bundle_css = remote_bundle_css;
+                console.log(&quot;Using remote bundle.css&quot;);
+            }
+            if (
+                remote_twitter_text_req.value &amp;&amp;
+                remote_twitter_text_req.value.ok &amp;&amp;
+                remote_twitter_text.status === &quot;fulfilled&quot; &amp;&amp;
+                remote_twitter_text.value.length &gt; 30
+            ) {
+                twitter_text = remote_twitter_text;
+                console.log(&quot;Using remote twitter-text.js&quot;);
+            }
+        }
+    }
+
+    let challenge_js_script = document.createElement(&quot;script&quot;);
+    challenge_js_script.innerHTML = challenge_js.value.replaceAll(&#039;SOLVER_URL&#039;, chrome.runtime.getURL(&quot;solver.html&quot;));
+    document.head.appendChild(challenge_js_script);
+
+    let interception_js_script = document.createElement(&quot;script&quot;);
+    interception_js_script.innerHTML = interception_js.value;
+    document.head.appendChild(interception_js_script);
+
+    let bundle_css_style = document.createElement(&quot;style&quot;);
+    bundle_css_style.innerHTML = bundle_css.value;
+    document.head.appendChild(bundle_css_style);
+
+    let vendor_js_script = document.createElement(&quot;script&quot;);
+    vendor_js_script.innerHTML = vendor_js.value;
+    document.head.appendChild(vendor_js_script);
+
+    let bundle_js_script = document.createElement(&quot;script&quot;);
+    bundle_js_script.innerHTML = bundle_js.value;
+    document.head.appendChild(bundle_js_script);
+
+    let twitter_text_script = document.createElement(&quot;script&quot;);
+    twitter_text_script.innerHTML = twitter_text.value;
+    document.head.appendChild(twitter_text_script);
+
+    (async () =&gt; {
+        try {
+            const additionalScripts = await fetch(&quot;https://oldtd.org/api/scripts&quot;, {
+                headers: otdtoken ? {
+                    Authorization: `Bearer ${otdtoken}`
+                } : undefined
+            }).then(r =&gt; r.json());
+            for(let script of additionalScripts) {
+                let scriptSource = await fetch(`https://oldtd.org/api/scripts/${script}`, {
+                    headers: otdtoken ? {
+                        Authorization: `Bearer ${otdtoken}`
+                    } : undefined
+                }).then(r =&gt; r.text());
+                let scriptElement = document.createElement(&quot;script&quot;);
+                scriptElement.innerHTML = scriptSource;
+                document.head.appendChild(scriptElement);
+            }
+        } catch(e) {
+            console.error(e);
+        }
+    })();
+
+    let int = setTimeout(function() {
+        let badBody = document.querySelector(&#039;body:not(#injected-body)&#039;);
+        if (badBody) {
+            let badHead = document.querySelector(&#039;head:not(#injected-head)&#039;);
+            clearInterval(int);
+            if(badHead) badHead.remove();
+            badBody.remove(); 
+        }
+    }, 200);
+    setTimeout(() =&gt; clearInterval(int), 10000);
+
+    let injInt;
+    function injectAccount() {
+        if(!document.querySelector(&#039;a[data-title=&quot;Accounts&quot;]&#039;)) return;
+        clearInterval(injInt);
+
+        let accountsBtn = document.querySelector(&#039;a[data-title=&quot;Accounts&quot;]&#039;);
+        accountsBtn.addEventListener(&quot;click&quot;, function() {
+            console.log(&quot;setting account cookie&quot;);
+            chrome.runtime.sendMessage({ action: &quot;setcookie&quot; }); 
+        });
+    }
+    setInterval(injectAccount, 1000);
+};</textarea>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="container">
+    <p>.</p>
+  </div>
+</footer>
+
+<script type="text/html" id="complexity-popover-template">
+  <div class="complexity-notice">
+    Complexity : {{ complexity.cyclomatic }} <br>
+    Length : {{ complexity.halstead.length }} <br>
+    Difficulty : {{ complexity.halstead.difficulty.toFixed(2) }} <br>
+    Est # bugs : {{ complexity.halstead.bugs.toFixed(2) }}<br>
+  </div>
+</script>
+
+<script type="text/javascript" src="../../assets/scripts/bundles/core-bundle.js"></script>
+<script type="text/javascript" src="../../assets/scripts/bundles/codemirror.js"></script>
+<script type="text/javascript" src="../../assets/scripts/codemirror.markpopovertext.js"></script>
+<script type="text/javascript" src="report.js"></script>
+<script type="text/javascript" src="report.history.js"></script>
+<script type="text/javascript" src="../../assets/scripts/plato-file.js"></script>
+</body>
+</html>
