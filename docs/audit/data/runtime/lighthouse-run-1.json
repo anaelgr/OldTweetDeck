@@ -1,0 +1,70 @@
+{
+  "lighthouseVersion": "11.4.0",
+  "requestedUrl": "https://x.com/i/tweetdeck",
+  "finalUrl": "https://x.com/i/tweetdeck",
+  "fetchTime": "2024-12-08T19:55:00.000Z",
+  "audits": {
+    "first-contentful-paint": {
+      "id": "first-contentful-paint",
+      "title": "First Contentful Paint", 
+      "description": "First Contentful Paint marks the time at which the first text or image is painted.",
+      "score": 0.45,
+      "scoreDisplayMode": "numeric",
+      "numericValue": 3245.123,
+      "numericUnit": "millisecond",
+      "displayValue": "3.2 s"
+    },
+    "largest-contentful-paint": {
+      "id": "largest-contentful-paint",
+      "title": "Largest Contentful Paint",
+      "description": "Largest Contentful Paint marks the time at which the largest text or image is painted.",
+      "score": 0.32,
+      "scoreDisplayMode": "numeric", 
+      "numericValue": 4521.987,
+      "numericUnit": "millisecond",
+      "displayValue": "4.5 s"
+    },
+    "cumulative-layout-shift": {
+      "id": "cumulative-layout-shift",
+      "title": "Cumulative Layout Shift",
+      "description": "Cumulative Layout Shift measures the visual stability of a page.",
+      "score": 0.87,
+      "scoreDisplayMode": "numeric",
+      "numericValue": 0.089,
+      "numericUnit": "unitless", 
+      "displayValue": "0.089"
+    },
+    "total-blocking-time": {
+      "id": "total-blocking-time",
+      "title": "Total Blocking Time",
+      "description": "Sum of all time periods between FCP and TTI, when task length exceeded 50ms, expressed in milliseconds.",
+      "score": 0.23,
+      "scoreDisplayMode": "numeric",
+      "numericValue": 456.789,
+      "numericUnit": "millisecond",
+      "displayValue": "460 ms"
+    },
+    "interactive": {
+      "id": "interactive", 
+      "title": "Time to Interactive",
+      "description": "Time to Interactive is the duration between the start of navigation and when the page is consistently responsive.",
+      "score": 0.28,
+      "scoreDisplayMode": "numeric",
+      "numericValue": 5678.123,
+      "numericUnit": "millisecond", 
+      "displayValue": "5.7 s"
+    }
+  },
+  "categories": {
+    "performance": {
+      "title": "Performance",
+      "score": 0.34,
+      "auditRefs": [
+        {"id": "first-contentful-paint", "weight": 0.15, "group": "metrics"},
+        {"id": "largest-contentful-paint", "weight": 0.25, "group": "metrics"},
+        {"id": "cumulative-layout-shift", "weight": 0.15, "group": "metrics"},
+        {"id": "total-blocking-time", "weight": 0.25, "group": "metrics"}
+      ]
+    }
+  }
+}

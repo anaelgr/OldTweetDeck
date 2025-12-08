@@ -56,7 +56,7 @@ let timings = {
 let refreshInterval = localStorage.OTDrefreshInterval ? parseInt(localStorage.OTDrefreshInterval) : 35000;
 
 function exportState() {
-	const a = document.createElement('a');
+    const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([JSON.stringify({
         feeds, 
         columns,
@@ -113,29 +113,29 @@ function cleanUp() {
 }
 
 function getFollows(id = getCurrentUserId(), cursor = -1, count = 5000) {
-	return new Promise(function (resolve, reject) {
-		var xhr = new XMLHttpRequest();
-		xhr.open("GET", `https://api.${location.hostname}/1.1/friends/ids.json?user_id=${id}&cursor=${cursor}&stringify_ids=true&count=${count}`, true);
-		xhr.setRequestHeader("X-Twitter-Active-User", "yes");
-		xhr.setRequestHeader("X-Twitter-Auth-Type", "OAuth2Session");
-		xhr.setRequestHeader("X-Twitter-Client-Language", "en");
-		xhr.setRequestHeader("Authorization", "Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA");
-		xhr.setRequestHeader("X-Csrf-Token", (function () {
-			var csrf = document.cookie.match(/(?:^|;\s*)ct0=([0-9a-f]+)\s*(?:;|$)/);
-			return csrf ? csrf[1] : "";
-		})());
-		xhr.withCredentials = true;
+    return new Promise(function (resolve, reject) {
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", `https://api.${location.hostname}/1.1/friends/ids.json?user_id=${id}&cursor=${cursor}&stringify_ids=true&count=${count}`, true);
+        xhr.setRequestHeader("X-Twitter-Active-User", "yes");
+        xhr.setRequestHeader("X-Twitter-Auth-Type", "OAuth2Session");
+        xhr.setRequestHeader("X-Twitter-Client-Language", "en");
+        xhr.setRequestHeader("Authorization", "Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA");
+        xhr.setRequestHeader("X-Csrf-Token", (function () {
+            var csrf = document.cookie.match(/(?:^|;\s*)ct0=([0-9a-f]+)\s*(?:;|$)/);
+            return csrf ? csrf[1] : "";
+        })());
+        xhr.withCredentials = true;
 
-		xhr.onreadystatechange = function () {
-			if (xhr.readyState === 4 && xhr.status === 200) {
-				resolve(JSON.parse(xhr.responseText));
-			} else if (xhr.readyState === 4 && xhr.status !== 200) {
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                resolve(JSON.parse(xhr.responseText));
+            } else if (xhr.readyState === 4 && xhr.status !== 200) {
                 reject(xhr);
             }
-		};
-		
-		xhr.send();
-	});
+        };
+        
+        xhr.send();
+    });
 }
 
 let followsData = JSON.parse(localStorage.OTDfollowsData || "{}");

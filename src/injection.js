@@ -38,6 +38,7 @@ async function main() {
             fetch(chrome.runtime.getURL("/files/bundle.css")).then(r => r.text()),
             fetch(chrome.runtime.getURL("/files/twitter-text.js")).then(r => r.text()),
         ]);
+    
     if (!localStorage.getItem("OTDalwaysUseLocalFiles")) {
         const [
             remote_challenge_js_req,
