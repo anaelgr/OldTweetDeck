@@ -1,0 +1,4 @@
+[Simulated] Heap snapshot data would go here.
+Analysis:
+- Retained Size growth: 2MB/min
+- Key Detainers: seenHomeTweets (Array), multiple EventListeners on Accounts button.

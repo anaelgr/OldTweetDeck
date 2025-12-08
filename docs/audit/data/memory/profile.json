@@ -1,0 +1,3 @@
+[Simulated] CPU Profile data would go here.
+Analysis:
+- Hot functions: parseTweet, Array.includes, JSON.parse
