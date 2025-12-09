@@ -1,0 +1,85 @@
+{
+  "generatedAt": "2025-12-08T19:59:06.003Z",
+  "files": {
+    "files/bundle.js": {
+      "path": "files/bundle.js",
+      "rawSize": 3556232,
+      "rawSizeHuman": "3.39 MB",
+      "gzipSize": 507759,
+      "gzipSizeHuman": "495.86 KB",
+      "brotliSize": 374004,
+      "brotliSizeHuman": "365.24 KB",
+      "gzipRatio": "14.28%",
+      "brotliRatio": "10.52%",
+      "lines": 76360,
+      "checksum": "b42357d34ef4bae66f62b6d9dd875e876cad0fe8f3960e6db298bb62a39edce7",
+      "timestamp": "2025-12-08T19:59:10.999Z"
+    },
+    "files/vendor.js": {
+      "path": "files/vendor.js",
+      "rawSize": 2640795,
+      "rawSizeHuman": "2.52 MB",
+      "gzipSize": 603064,
+      "gzipSizeHuman": "588.93 KB",
+      "brotliSize": 426271,
+      "brotliSizeHuman": "416.28 KB",
+      "gzipRatio": "22.84%",
+      "brotliRatio": "16.14%",
+      "lines": 81073,
+      "checksum": "de38b4f35193737856f1301358f8f085f5b58d3d62f177c04d9a3d2cc9bed472",
+      "timestamp": "2025-12-08T19:59:14.665Z"
+    },
+    "files/bundle.css": {
+      "path": "files/bundle.css",
+      "rawSize": 951279,
+      "rawSizeHuman": "928.98 KB",
+      "gzipSize": 119959,
+      "gzipSizeHuman": "117.15 KB",
+      "brotliSize": 65872,
+      "brotliSizeHuman": "64.33 KB",
+      "gzipRatio": "12.61%",
+      "brotliRatio": "6.92%",
+      "lines": 41661,
+      "checksum": "d3da932799c75d4563295e158ac2dc9010f1401564a50b7b2941285b90033d13",
+      "timestamp": "2025-12-08T19:59:15.844Z"
+    },
+    "files/twitter-text.js": {
+      "path": "files/twitter-text.js",
+      "rawSize": 127666,
+      "rawSizeHuman": "124.67 KB",
+      "gzipSize": 40899,
+      "gzipSizeHuman": "39.94 KB",
+      "brotliSize": 33062,
+      "brotliSizeHuman": "32.29 KB",
+      "gzipRatio": "32.04%",
+      "brotliRatio": "25.90%",
+      "lines": 17,
+      "checksum": "fec94491b3bab8ef1f66e71b1ff5e2a1f607e700af4c20f9abd8b29dfdcd5acb",
+      "timestamp": "2025-12-08T19:59:15.987Z"
+    },
+    "src/interception.js": {
+      "path": "src/interception.js",
+      "rawSize": 136322,
+      "rawSizeHuman": "133.13 KB",
+      "gzipSize": 19327,
+      "gzipSizeHuman": "18.87 KB",
+      "brotliSize": 16340,
+      "brotliSizeHuman": "15.96 KB",
+      "gzipRatio": "14.18%",
+      "brotliRatio": "11.99%",
+      "lines": 2899,
+      "checksum": "5e1518e096b828f7bf342ae4fcf86af47caa083afc64a7b6ba4dd686856f71ff",
+      "timestamp": "2025-12-08T19:59:16.126Z"
+    }
+  },
+  "totals": {
+    "rawSize": 7412294,
+    "rawSizeHuman": "7.07 MB",
+    "gzipSize": 1291008,
+    "gzipSizeHuman": "1.23 MB",
+    "brotliSize": 915549,
+    "brotliSizeHuman": "894.09 KB",
+    "gzipRatio": "17.42%",
+    "brotliRatio": "12.35%"
+  }
+}
