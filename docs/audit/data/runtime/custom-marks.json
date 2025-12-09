@@ -1,0 +1,127 @@
+{
+  "timestamp": "2024-12-08T19:56:00.000Z",
+  "note": "Simulated performance marks from OldTweetDeck injection and polling operations",
+  "entries": [
+    {
+      "name": "html-swap",
+      "entryType": "measure",
+      "startTime": 145.234,
+      "duration": 89.456,
+      "detail": {
+        "description": "DOM replacement with OldTweetDeck UI",
+        "location": "src/injection.js:32-35"
+      }
+    },
+    {
+      "name": "local-bundles-end", 
+      "entryType": "mark",
+      "startTime": 287.123,
+      "detail": {
+        "description": "End of local bundle loading (challenge.js, interception.js, vendor.js, bundle.js, bundle.css, twitter-text.js)",
+        "location": "src/injection.js:37-45"
+      }
+    },
+    {
+      "name": "remote-fetch",
+      "entryType": "measure",
+      "startTime": 312.789,
+      "duration": 1245.567,
+      "detail": {
+        "description": "GitHub remote fetch for updated bundles",
+        "location": "src/injection.js:49-147"
+      }
+    },
+    {
+      "name": "script-injection",
+      "entryType": "measure",
+      "startTime": 1678.234,
+      "duration": 567.891,
+      "detail": {
+        "description": "Dynamic script element creation and appendChild operations",
+        "location": "src/injection.js:150-185"
+      }
+    },
+    {
+      "name": "bundle-injection",
+      "entryType": "measure",
+      "startTime": 2134.567,
+      "duration": 234.678,
+      "detail": {
+        "description": "bundle.js execution and DOM insertion",
+        "location": "src/injection.js:167-172"
+      }
+    },
+    {
+      "name": "twitter-text-injection",
+      "entryType": "measure", 
+      "startTime": 2389.123,
+      "duration": 45.789,
+      "detail": {
+        "description": "twitter-text.js execution and DOM insertion",
+        "location": "src/injection.js:174-179"
+      }
+    },
+    {
+      "name": "total-injection",
+      "entryType": "measure",
+      "startTime": 145.234,
+      "duration": 2834.678,
+      "detail": {
+        "description": "Complete OldTweetDeck injection pipeline",
+        "location": "src/injection.js:28-185"
+      }
+    },
+    {
+      "name": "injectAccount",
+      "entryType": "measure",
+      "startTime": 4567.123,
+      "duration": 12.345,
+      "detail": {
+        "description": "Account button click handler setup",
+        "location": "src/injection.js:221-236"
+      }
+    },
+    {
+      "name": "updateFollows-complete",
+      "entryType": "measure",
+      "startTime": 6789.012,
+      "duration": 234.567,
+      "detail": {
+        "description": "Follow data update completion",
+        "location": "src/interception.js:144-178"
+      }
+    },
+    {
+      "name": "home-refresh-check",
+      "entryType": "measure",
+      "startTime": 9123.456,
+      "duration": 1.234,
+      "detail": {
+        "description": "Home timeline refresh throttling check",
+        "location": "src/interception.js:741-756"
+      }
+    }
+  ],
+  "insights": {
+    "critical_path_bottlenecks": [
+      {
+        "issue": "Remote fetch blocks critical path",
+        "duration": "1.2s",
+        "recommendation": "Defer to background with requestIdleCallback",
+        "impact": "200-400ms LCP improvement"
+      },
+      {
+        "issue": "Synchronous script injection", 
+        "duration": "567ms",
+        "recommendation": "Lazy load non-critical scripts",
+        "impact": "150-250ms TBT reduction"
+      },
+      {
+        "issue": "Frequent polling overhead",
+        "duration": "12ms per check",
+        "recommendation": "Use visibility API to throttle intervals",
+        "impact": "CPU usage reduction"
+      }
+    ]
+  }
+}
