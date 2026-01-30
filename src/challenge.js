@@ -209,3 +209,4 @@ window.addEventListener('message', e => {
         console.error(e);
     }
 })()
+window.dispatchEvent(new CustomEvent('OTDChallengeReady'));

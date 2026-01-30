@@ -115,7 +115,11 @@ async function main() {
     const [challenge_js, interception_js, vendor_js, bundle_js, bundle_css, twitter_text] = results;
 
     let challenge_js_script = document.createElement("script");
-    challenge_js_script.innerHTML = challenge_js.replaceAll('SOLVER_URL', chrome.runtime.getURL("solver.html"));
+    let challenge_js_content = challenge_js.replaceAll('SOLVER_URL', chrome.runtime.getURL("solver.html"));
+    if(!challenge_js_content.includes("OTDChallengeReady")) {
+        challenge_js_content += "\nwindow.dispatchEvent(new CustomEvent('OTDChallengeReady'));";
+    }
+    challenge_js_script.innerHTML = challenge_js_content;
     document.head.appendChild(challenge_js_script);
 
     let interception_js_script = document.createElement("script");
