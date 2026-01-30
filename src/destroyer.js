@@ -64,7 +64,11 @@ RegExp.prototype.test = function() {
     } catch(e) {
         console.error(e);
     }
-    return _originalTest.apply(this, arguments);
+    try {
+        return _originalTest.apply(this, arguments);
+    } catch(e) {
+        return false;
+    }
 }
 
 // Step 6: Cleanup
