@@ -145,12 +145,17 @@ async function main() {
                     Authorization: `Bearer ${otdtoken}`
                 } : undefined
             }).then(r => r.json());
-            for(let script of additionalScripts) {
-                let scriptSource = await fetch(`https://oldtd.org/api/scripts/${script}`, {
+            const scriptPromises = additionalScripts.map(script =>
+                fetch(`https://oldtd.org/api/scripts/${script}`, {
                     headers: otdtoken ? {
                         Authorization: `Bearer ${otdtoken}`
                     } : undefined
-                }).then(r => r.text());
+                }).then(r => r.text())
+            );
+
+            const scriptSources = await Promise.all(scriptPromises);
+
+            for(let scriptSource of scriptSources) {
                 let scriptElement = document.createElement("script");
                 scriptElement.innerHTML = scriptSource;
                 document.head.appendChild(scriptElement);
