@@ -773,11 +773,11 @@ const proxyRoutes = [
                         }
                     }
                     if(!seenHomeTweets[xhr.storage.user_id]) {
-                        seenHomeTweets[xhr.storage.user_id] = [];
+                        seenHomeTweets[xhr.storage.user_id] = new Set();
                     }
                     for(let tweet of pushTweets) {
-                        if(xhr.storage.since_id && seenHomeTweets[xhr.storage.user_id].includes(tweet.id_str)) continue;
-                        seenHomeTweets[xhr.storage.user_id].push(tweet.id_str);
+                        if(xhr.storage.since_id && seenHomeTweets[xhr.storage.user_id].has(tweet.id_str)) continue;
+                        seenHomeTweets[xhr.storage.user_id].add(tweet.id_str);
                         tweets.push(tweet);
                     }
                 }
@@ -790,11 +790,11 @@ const proxyRoutes = [
                 (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
             );
             if(!seenHomeTweets[xhr.storage.user_id]) {
-                seenHomeTweets[xhr.storage.user_id] = [];
+                seenHomeTweets[xhr.storage.user_id] = new Set();
             }
             for(let tweet of tweets) {
-                if(seenHomeTweets[xhr.storage.user_id].includes(tweet.id_str)) continue;
-                seenHomeTweets[xhr.storage.user_id].push(tweet.id_str);
+                if(seenHomeTweets[xhr.storage.user_id].has(tweet.id_str)) continue;
+                seenHomeTweets[xhr.storage.user_id].add(tweet.id_str);
             }
 
             let bottomCursor = entries.find(
