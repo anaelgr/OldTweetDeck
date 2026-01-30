@@ -1302,6 +1302,7 @@ const proxyRoutes = [
                             switch(type) {
                                 case "users_retweeted_your_retweet":
                                 case "users_retweeted_your_tweet":
+                                case "user_retweeted_multiple_tweets":
                                 case "user_liked_multiple_tweets": 
                                 case "users_liked_your_retweet":
                                 case "users_liked_your_tweet": {
@@ -1314,7 +1315,7 @@ const proxyRoutes = [
                                         for(const tweetId of tweets) {
                                             const tweet = go.tweets[tweetId];
                                             const user = go.users[userId];
-                                            const action = type === "users_retweeted_your_tweet" || type === "users_retweeted_your_retweet" ? "retweet" : "favorite";
+                                            const action = type.includes("retweeted") ? "retweet" : "favorite";
                                             if(!tweet || !user) continue;
                                             const id = `${tweetId}-${userId}-${action}`;
                                             if(seenNotifications.has(id)) continue;
@@ -2622,6 +2623,38 @@ const proxyRoutes = [
             // console.log("Got settings.json");
             return {"versions":{"feature_switches":"a6da3a3fb61e9c1423276a8df0da3258980b42cf","experiments":"a6da3a3fb61e9c1423276a8df0da3258980b42cf","settings":"a88b5266c59f52ccf8a8f1fd85f2b92a"},"config":{"live_engagement_in_column_8020":{"value":"live_engagement_enabled"},"tweetdeck_activity_streaming":{"value":false},"tweetdeck_content_render_search_tweets":{"value":true},"tweetdeck_live_engagements":{"value":true},"tweetdeck_scheduled_new_api":{"value":true},"tweetdeck_trends_column":{"value":true},"twitter_text_emoji_counting_enabled":{"value":true}},"impression_pointers":{}};
         },
+    },
+    {
+        path: /\/hashflag\/config-.*\.json/,
+        method: "GET",
+        openHandler: () => {},
+        sendHandler: emulateResponse,
+        afterRequest: (xhr) => {
+            return {"activeHashflags":[]};
+        }
+    },
+    {
+        path: "/1.1/help/configuration.json",
+        method: "GET",
+        openHandler: () => {},
+        sendHandler: emulateResponse,
+        afterRequest: (xhr) => {
+            return {
+                "characters_reserved_per_media": 23,
+                "dm_text_character_limit": 10000,
+                "max_media_per_upload": 4,
+                "non_username_paths": ["about", "account", "accounts", "activity", "all", "announcements", "anywhere", "api_rules", "api_help", "auth", "badges", "blog", "business", "buttons", "dev", "export", "favorites", "followers", "following", "help", "home", "i", "im_not_a_robot", "inbox", "info", "invitations", "jobs", "lib", "list", "login", "logout", "m", "mentions", "messages", "mockview", "notifications", "opensearch", "personalize", "phishing", "plans", "privacy", "pro", "profile", "projects", "rules", "saved_searches", "search", "settings", "share", "signup", "signin", "similar_to", "statistics", "tos", "translate", "trends", "tweetdeck", "tweets", "user", "welcome", "who_to_follow", "widgets", "zendesk_auth", "z_vcard"],
+                "photo_size_limit": 5242880,
+                "photo_sizes": {
+                    "thumb": {"h": 150, "w": 150, "resize": "crop"},
+                    "small": {"h": 480, "w": 340, "resize": "fit"},
+                    "medium": {"h": 1200, "w": 600, "resize": "fit"},
+                    "large": {"h": 2048, "w": 1024, "resize": "fit"}
+                },
+                "short_url_length": 23,
+                "short_url_length_https": 23
+            };
+        }
     },
     {
         path: "/i/jot",
