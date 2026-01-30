@@ -1,4 +1,5 @@
 function createModal(html, className, onclose, canclose) {
+    ensureStyles();
     let modal = document.createElement('div');
     modal.classList.add('otd-modal');
     let modal_content = document.createElement('div');
@@ -41,12 +42,17 @@ function createModal(html, className, onclose, canclose) {
 }
 
 async function getNotifications() {
-    let notifs = await fetch('https://oldtd.org/notifications.json?t='+Date.now()).then(r => r.json());
-    let readNotifs = localStorage.getItem('readNotifications') ? JSON.parse(localStorage.getItem('readNotifications')) : [];
-    let notifsToDisplay = notifs.filter(notif => !readNotifs.includes(notif.id));
-
-    return notifsToDisplay;
+    try {
+        let notifs = await fetch('https://oldtd.org/notifications.json?t='+Date.now()).then(r => r.json());
+        let readNotifs = localStorage.getItem('readNotifications') ? JSON.parse(localStorage.getItem('readNotifications')) : [];
+        let notifsToDisplay = notifs.filter(notif => !readNotifs.includes(notif.id));
+        return notifsToDisplay;
+    } catch(e) {
+        console.error("Failed to fetch notifications", e);
+        return [];
+    }
 }
+
 function maxVersionCheck(ver, maxVer) {
     let verArr = ver.split('.');
     let maxVerArr = maxVer.split('.');
@@ -69,8 +75,20 @@ function minVersionCheck(ver, minVer) {
 async function showNotifications() {
     let notifsToDisplay = await getNotifications();
     if(notifsToDisplay.length === 0) return;
-    let manifest = await fetch(chrome.runtime.getURL('/manifest.json')).then(r => r.json());
-    let currentVersion = manifest.version;
+
+    // Use runtime.getManifest instead of fetching manifest.json (it's available in MV3 usually, but this is MAIN world)
+    // MAIN world cannot access chrome.runtime.getManifest directly usually.
+    // But injection.js polyfills chrome.runtime.getURL.
+    // We stick to fetch manifest logic or pass it from content script.
+    // The original code fetched it. We'll keep fetching but catch errors.
+
+    let currentVersion = "0.0.0";
+    try {
+        let manifest = await fetch(chrome.runtime.getURL('/manifest.json')).then(r => r.json());
+        currentVersion = manifest.version;
+    } catch(e) {
+        console.warn("Could not get manifest version", e);
+    }
    
     for(let notif of notifsToDisplay) {
         if(!localStorage.OTDnotifsReadOnce && notif.ignoreOnInstall) {
@@ -167,8 +185,12 @@ html.dark .otd-modal-content {
 }
 `;
 
-setTimeout(() => {
-    document.head.appendChild(style);
-}, 1000);
+function ensureStyles() {
+    if (!document.documentElement.contains(style)) {
+        document.head.appendChild(style);
+    }
+}
+
+// Check if we need to show notifications soon, but don't force style injection yet until needed or DOM is stable
 setTimeout(showNotifications, 2000);
 setInterval(showNotifications, 60000 * 60);

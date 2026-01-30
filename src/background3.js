@@ -1,35 +1,71 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if(request.action === 'setcookie') {
-        chrome.cookies.getAll({url: "https://x.com"}, async cookies => {
-            console.log('setcookie', cookies);
-            chrome.tabs.query({ active: true, lastFocusedWindow: true }, tab => {
-                tab = tab[0];
-                chrome.cookies.getAllCookieStores(async cookieStores => {
-                    console.log('cookieStores', cookieStores, tab);
-                    const storeId = cookieStores?.find( cookieStore => cookieStore?.tabIds?.indexOf(tab?.id) !== -1)?.id;
-
-                    for(let cookie of cookies) {
-                        chrome.cookies.set({
-                            url: "https://twitter.com",
-                            name: cookie.name,
-                            value: cookie.value,
-                            expirationDate: cookie.expirationDate,
-                            domain: ".twitter.com",
-                            sameSite: cookie.sameSite,
-                            secure: cookie.secure,
-                            httpOnly: cookie.httpOnly,
-                            storeId
-                        }, () => {
-                            console.log('set cookie', cookie, storeId);
-                        });
-                    }
-                });
+    if (request.action === 'setcookie') {
+        handleSetCookie(sender).catch(err => console.error("Error setting cookies:", err));
+        // No response needed for setcookie in current implementation
+    } else if (request.action === 'getcookie') {
+        chrome.cookies.get({ name: "auth_token", url: "https://x.com" })
+            .then(cookie => sendResponse(cookie))
+            .catch(e => {
+                console.error(e);
+                sendResponse(null);
             });
-        });
-    } else if(request.action === 'getcookie') {
-        chrome.cookies.get({ name: "auth_token", url: "https://x.com" }).then(cookie => {
-            sendResponse(cookie);
-        });
-        return true;
+        return true; // Keep message channel open for async response
     }
 });
+
+async function handleSetCookie(sender) {
+    // Fetch cookies from x.com
+    const cookies = await chrome.cookies.getAll({ url: "https://x.com" });
+    console.log(`Found ${cookies.length} cookies on x.com`);
+
+    // Determine target storeId
+    let storeId = null;
+
+    // 1. Try to get it from the sender tab (most reliable context)
+    if (sender.tab && sender.tab.id) {
+        const cookieStores = await chrome.cookies.getAllCookieStores();
+        const store = cookieStores.find(s => s.tabIds.includes(sender.tab.id));
+        if (store) storeId = store.id;
+    }
+
+    // 2. Fallback to active tab
+    if (!storeId) {
+        const tabs = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+        if (tabs.length > 0) {
+            const cookieStores = await chrome.cookies.getAllCookieStores();
+            const store = cookieStores.find(s => s.tabIds.includes(tabs[0].id));
+            if (store) storeId = store.id;
+        }
+    }
+
+    // Set cookies for twitter.com
+    const promises = cookies.map(cookie => {
+        // Filter out session cookies if expirationDate is missing? No, copy them too.
+        // Note: hostOnly is not settable, strict/lax sameSite might need adjustment but usually copying works.
+        const newCookie = {
+            url: "https://twitter.com",
+            name: cookie.name,
+            value: cookie.value,
+            domain: ".twitter.com",
+            path: "/",
+            secure: cookie.secure,
+            httpOnly: cookie.httpOnly,
+            sameSite: cookie.sameSite,
+        };
+
+        if (cookie.expirationDate) {
+            newCookie.expirationDate = cookie.expirationDate;
+        }
+
+        if (storeId) {
+            newCookie.storeId = storeId;
+        }
+
+        return chrome.cookies.set(newCookie).catch(e => {
+            console.warn(`Failed to set cookie ${cookie.name}:`, e);
+        });
+    });
+
+    await Promise.all(promises);
+    console.log('Cookie sync complete.');
+}
