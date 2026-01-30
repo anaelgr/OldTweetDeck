@@ -59,13 +59,12 @@ RegExp.prototype.test = function() {
     try {
         if(this.toString() === '/[?&]failedScript=/') {
             RegExp.prototype.test = _originalTest;
-            throw "hehe";
+            return false;
         };
     } catch(e) {
-        RegExp.prototype.test = _originalTest;
-    } finally {
-        return _originalTest.apply(this, arguments);
+        console.error(e);
     }
+    return _originalTest.apply(this, arguments);
 }
 
 // Step 6: Cleanup
