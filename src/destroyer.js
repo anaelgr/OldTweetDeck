@@ -1,3 +1,12 @@
+// Step 0: Unregister all service workers to prevent modern Twitter from interfering
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+        for (let registration of registrations) {
+            registration.unregister();
+        }
+    });
+}
+
 // Step 1: fool twitter into thinking scripts loaded
 window.__SCRIPTS_LOADED__ = Object.freeze({
     main: true,
@@ -49,12 +58,11 @@ Array.prototype.push = function() {
         const arg = arguments[0];
         if (arg && Array.isArray(arg) && Array.isArray(arg[0])) {
             const chunkIds = arg[0];
-            if (chunkIds.includes("vendor") || chunkIds.includes("main")) {
-                // If it's old TweetDeck's webpack, let it through
-                if (this !== window.webpackJsonp) {
-                    console.warn("OldTweetDeck: Blocked attempt to load Twitter script", chunkIds[0]);
-                    return this.length;
-                }
+            // If it's a webpack chunk push (array of 2 or 3 elements, first is array of ids)
+            // We only allow it if it's OldTweetDeck's webpackJsonp
+            if (this !== window.webpackJsonp && typeof chunkIds[0] !== 'undefined') {
+                console.warn("OldTweetDeck: Blocked attempt to load unknown script chunk", chunkIds);
+                return this.length;
             }
         }
     } catch(e) {
