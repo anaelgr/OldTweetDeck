@@ -94,12 +94,14 @@ async function showNotifications() {
         console.warn("Could not get manifest version", e);
     }
    
+    let readNotifs = localStorage.getItem('readNotifications') ? JSON.parse(localStorage.getItem('readNotifications')) : [];
+    let initialReadNotifsLength = readNotifs.length;
+    let isFirstRun = !localStorage.OTDnotifsReadOnce;
+
     for(let notif of notifsToDisplay) {
-        if(!localStorage.OTDnotifsReadOnce && notif.ignoreOnInstall) {
-            let readNotifs = localStorage.getItem('readNotifications') ? JSON.parse(localStorage.getItem('readNotifications')) : [];
+        if(isFirstRun && notif.ignoreOnInstall) {
             if(readNotifs.includes(notif.id)) continue;
             readNotifs.push(notif.id);
-            localStorage.setItem('readNotifications', JSON.stringify(readNotifs));
             continue;
         }
         if(notif.maxVersion && !maxVersionCheck(currentVersion, notif.maxVersion)) continue;
@@ -121,6 +123,10 @@ async function showNotifications() {
             readNotifs.push(notif.id);
             localStorage.setItem('readNotifications', JSON.stringify(readNotifs));
         }, () => Date.now() - shown > 3000);
+    }
+
+    if (readNotifs.length !== initialReadNotifsLength) {
+        localStorage.setItem('readNotifications', JSON.stringify(readNotifs));
     }
     localStorage.OTDnotifsReadOnce = '1';
 }
