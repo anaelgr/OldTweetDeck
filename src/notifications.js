@@ -135,7 +135,7 @@ let style = document.createElement('style');
 style.innerHTML = /*css*/`
 .otd-modal {
     position: fixed;
-    z-index: 200;
+    z-index: 100000;
     left: 0;
     top: 0;
     width: 100%;
