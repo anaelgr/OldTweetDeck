@@ -21,15 +21,21 @@ fetch(solverIframe.src).catch(() => {
     }
 });
 let injectedBody = document.getElementById('injected-body');
-if(injectedBody) injectedBody.appendChild(solverIframe);
-else {
-    let int = setInterval(() => {
-        injectedBody = document.getElementById('injected-body');
-        if(injectedBody) {
-            clearInterval(int);
+if (injectedBody) {
+    injectedBody.appendChild(solverIframe);
+} else {
+    const observer = new MutationObserver(() => {
+        const injectedBody = document.getElementById('injected-body');
+        if (injectedBody) {
             injectedBody.appendChild(solverIframe);
+            observer.disconnect();
         }
-    }, 50);
+    });
+    observer.observe(document.documentElement, {
+        childList: true,
+        subtree: true
+    });
+    setTimeout(() => observer.disconnect(), 30000);
 }
 
 function uuidV4() {
