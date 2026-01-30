@@ -103,9 +103,10 @@ function cleanUp() {
             delete columns[columnId];
         }
     }
-    localStorage.OTDcolumns = JSON.stringify(columns);
+    const columnsStr = JSON.stringify(columns);
+    localStorage.OTDcolumns = columnsStr;
     for(let id in feeds) {
-        if(!localStorage.OTDcolumns.includes(id)) {
+        if(!columnsStr.includes(id)) {
             delete feeds[id];
         }
     }
