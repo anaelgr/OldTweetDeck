@@ -45,10 +45,16 @@ observer.observe(document.documentElement, {
 // Step 4: destroy twitter critical modules
 let _originalPush = Array.prototype.push;
 Array.prototype.push = function() {
-    if(arguments[0]?.[0]?.[0] === "vendor" || arguments[0]?.[0]?.[0] === "main") {
-        // Throwing is expensive if caught in a loop, but necessary here to break execution flow of the loader
-        console.log("OldTweetDeck: Blocked attempt to load Twitter script");
-        throw "Twitter killing magic killed Twitter";
+    try {
+        if(arguments[0]?.[0]?.[0] === "vendor" || arguments[0]?.[0]?.[0] === "main") {
+            // Throwing is expensive if caught in a loop, but necessary here to break execution flow of the loader
+            console.log("OldTweetDeck: Blocked attempt to load Twitter script");
+            throw "Twitter killing magic killed Twitter";
+        }
+    } catch(e) {
+        if(e === "Twitter killing magic killed Twitter") {
+            throw e;
+        }
     }
     return _originalPush.apply(this, arguments);
 }
