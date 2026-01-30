@@ -15,6 +15,7 @@ let extId;
 let isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
 let cookie = null;
 let otdtoken = null;
+const OTD_ALWAYS_USE_LOCAL = localStorage.getItem("OTDalwaysUseLocalFiles");
 
 if(!window.chrome) window.chrome = {};
 if(!window.chrome.runtime) window.chrome.runtime = {};
@@ -52,7 +53,7 @@ async function getResource(localPath, remoteUrl) {
     }
 
     // 2. If allowed, try Remote (with Stale-While-Revalidate Cache)
-    if (!localStorage.getItem("OTDalwaysUseLocalFiles")) {
+    if (!OTD_ALWAYS_USE_LOCAL) {
         try {
              const cache = await caches.open('otd-resources');
              const cachedRes = await cache.match(remoteUrl);
