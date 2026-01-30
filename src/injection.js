@@ -1,3 +1,16 @@
+/**
+ * SECURITY WARNING: Remote Code Injection
+ *
+ * This file fetches and executes JavaScript code from remote sources (GitHub, oldtd.org).
+ * This design choice is intentional to allow for rapid updates and hotfixes without
+ * requiring a full extension update review process.
+ *
+ * RISK: This creates a potential Remote Code Execution (RCE) vulnerability if the
+ * source domains are compromised.
+ *
+ * CONSTRAINT: The user has explicitly requested NOT to disable this mechanism.
+ */
+
 let extId;
 let isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
 let cookie = null;
@@ -12,13 +25,13 @@ window.chrome.runtime.getURL = url => {
 window.addEventListener('message', e => {
     if(e.source !== window) return;
     if(e.data.extensionId) {
-        console.log("got extensionId", e.data.extensionId);
+        // console.log("got extensionId", e.data.extensionId);
         extId = e.data.extensionId;
         main();
     } else if(e.data.cookie) {
         cookie = e.data.cookie;
     } else if(e.data.token) {
-        console.log("got otdtoken");
+        // console.log("got otdtoken");
         otdtoken = e.data.token;
     }
 });
@@ -52,7 +65,7 @@ async function getResource(localPath, remoteUrl) {
                          const txt = await r.text();
                          if (txt.length > 30) {
                              await cache.put(remoteUrl, new Response(txt));
-                             console.log(`Background updated: ${remoteUrl}`);
+                             // console.log(`Background updated: ${remoteUrl}`);
                          }
                      }
                  } catch (e) { console.error("Background update failed", e); }
@@ -62,7 +75,7 @@ async function getResource(localPath, remoteUrl) {
                  const cachedTxt = await cachedRes.text();
                  if (cachedTxt.length > 30) {
                      content = cachedTxt;
-                     console.log(`Using cached ${remoteUrl}`);
+                     // console.log(`Using cached ${remoteUrl}`);
                      // Trigger background update without awaiting
                      setTimeout(updateCache, 100);
                  } else {
@@ -78,7 +91,7 @@ async function getResource(localPath, remoteUrl) {
                  }
              } else {
                  // No cache, blocking fetch
-                 console.log(`Fetching remote (no cache) ${remoteUrl}`);
+                 // console.log(`Fetching remote (no cache) ${remoteUrl}`);
                  const r = await fetch(remoteUrl);
                  if (r.ok) {
                      const txt = await r.text();
@@ -222,7 +235,7 @@ async function main() {
 
     function attachAccountListener(btn) {
         btn.addEventListener("click", function() {
-            console.log("setting account cookie");
+            // console.log("setting account cookie");
             chrome.runtime.sendMessage({ action: "setcookie" }); 
         });
     }
