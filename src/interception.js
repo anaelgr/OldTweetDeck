@@ -45,7 +45,7 @@ if(localStorage.OTDsettings) {
         settings = null;
     }
 }
-let seenNotifications = [];
+let seenNotifications = new Set();
 let seenHomeTweets = {};
 let timings = {
     home: {},
@@ -1317,8 +1317,8 @@ const proxyRoutes = [
                                             const action = type === "users_retweeted_your_tweet" || type === "users_retweeted_your_retweet" ? "retweet" : "favorite";
                                             if(!tweet || !user) continue;
                                             const id = `${tweetId}-${userId}-${action}`;
-                                            if(seenNotifications.includes(id)) continue;
-                                            seenNotifications.push(id);
+                                            if(seenNotifications.has(id)) continue;
+                                            seenNotifications.add(id);
                                             const notifSortIndex = +sortIndex - (i++);
                                             tweet.user = go.users[tweet.user_id_str];
                                             if(tweet.quoted_status_id_str) {
@@ -1355,8 +1355,8 @@ const proxyRoutes = [
                                     const type = item.clientEventInfo.element === "user_mentioned_you" ? "mention" : item.clientEventInfo.element === "user_replied_to_your_tweet" ? "reply" : "quote";
                                     
                                     const id = `${tweetId}-${tweet.user_id_str}-${type}`;
-                                    if(seenNotifications.includes(id)) continue;
-                                    seenNotifications.push(id);
+                                    if(seenNotifications.has(id)) continue;
+                                    seenNotifications.add(id);
     
                                     if(tweet.quoted_status_id_str) {
                                         tweet.quoted_status = go.tweets[tweet.quoted_status_id_str];
@@ -1385,8 +1385,8 @@ const proxyRoutes = [
                                         const user = go.users[userId];
                                         if(!user) continue;
                                         const id = `${userId}-follow`;
-                                        if(seenNotifications.includes(id)) continue;
-                                        seenNotifications.push(id);
+                                        if(seenNotifications.has(id)) continue;
+                                        seenNotifications.add(id);
                                         notifications.push({
                                             action: "follow",
                                             created_at: formatTwitterStyle(new Date(+sortIndex)),
