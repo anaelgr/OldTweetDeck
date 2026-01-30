@@ -113,65 +113,6 @@ function cleanUp() {
     localStorage.OTDfeeds = JSON.stringify(feeds);
 }
 
-function getFollows(id = getCurrentUserId(), cursor = -1, count = 5000) {
-    return new Promise(function (resolve, reject) {
-        var xhr = new XMLHttpRequest();
-        xhr.open("GET", `https://api.${location.hostname}/1.1/friends/ids.json?user_id=${id}&cursor=${cursor}&stringify_ids=true&count=${count}`, true);
-        xhr.setRequestHeader("X-Twitter-Active-User", "yes");
-        xhr.setRequestHeader("X-Twitter-Auth-Type", "OAuth2Session");
-        xhr.setRequestHeader("X-Twitter-Client-Language", "en");
-        xhr.setRequestHeader("Authorization", "Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA");
-        xhr.setRequestHeader("X-Csrf-Token", (function () {
-            var csrf = document.cookie.match(/(?:^|;\s*)ct0=([0-9a-f]+)\s*(?:;|$)/);
-            return csrf ? csrf[1] : "";
-        })());
-        xhr.withCredentials = true;
-
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                resolve(JSON.parse(xhr.responseText));
-            } else if (xhr.readyState === 4 && xhr.status !== 200) {
-                reject(xhr);
-            }
-        };
-        
-        xhr.send();
-    });
-}
-
-let followsData = JSON.parse(localStorage.OTDfollowsData || "{}");
-
-let updatingFollows = false;
-function updateFollows(id = getCurrentUserId()) {
-    if(followsData[id] && followsData[id].lastUpdate && Date.now() - +followsData[id].lastUpdate < 1000 * 60 * 60 * 6) return;
-    if(updatingFollows) return;
-    updatingFollows = true;
-
-    if(!followsData[id]) followsData[id] = {};
-    let newfollows = [];
-    let cursor = -1;
-    let count = 5000;
-    let i = 0;
-    let get = async () => {
-        let res = await getFollows(id, cursor, count);
-        newfollows = newfollows.concat(res.ids);
-        if(res.next_cursor_str === "0" || i++ > 10) {
-            followsData[id].lastUpdate = Date.now();
-            followsData[id].data = newfollows;
-            localStorage.OTDfollowsData = JSON.stringify(followsData);
-            updatingFollows = false;
-            return;
-        }
-        cursor = res.next_cursor_str;
-        get();
-    };
-
-    get();
-}
-
-// setTimeout(updateFollows, 1000);
-// setInterval(updateFollows, 1000 * 60);
-
 function parseNoteTweet(result) {
     let text, entities;
     if (result.note_tweet.note_tweet_results.result) {
@@ -754,7 +695,6 @@ const proxyRoutes = [
             xhr.modReqHeaders["X-Twitter-Client-Language"] = "en";
             xhr.modReqHeaders["Authorization"] = PUBLIC_TOKENS[0];
             delete xhr.modReqHeaders["X-Twitter-Client-Version"];
-            // updateFollows(xhr.storage.user_id);
         },
         afterRequest: (xhr) => {
             if(xhr.storage.cancelled) {
@@ -1093,7 +1033,6 @@ const proxyRoutes = [
             xhr.modReqHeaders["Authorization"] =
                 PUBLIC_TOKENS[0];
             delete xhr.modReqHeaders["X-Twitter-Client-Version"];
-            // delete xhr.modReqHeaders["x-act-as-user-id"];
         },
         openHandler: (xhr, method, url, async, username, password) => {
             const user_id = xhr.storage.user_id;
@@ -1249,7 +1188,6 @@ const proxyRoutes = [
             xhr.modReqHeaders["Authorization"] =
                 PUBLIC_TOKENS[0];
             delete xhr.modReqHeaders["X-Twitter-Client-Version"];
-            // delete xhr.modReqHeaders["x-act-as-user-id"];
         },
         // artificially slow down, because theres an invisible rate limit that gets hit after a few hours
         responseHeaderOverride: {
@@ -1268,9 +1206,6 @@ const proxyRoutes = [
                 console.error(e);
                 return [];
             }
-            // if (data.errors && data.errors[0]) {
-            //     return [];
-            // }
             let instructions = data?.data?.bookmark_timeline_v2?.timeline?.instructions;
             let entries = instructions?.find((e) => e.type === "TimelineAddEntries");
             if (!entries) {
@@ -1643,7 +1578,6 @@ const proxyRoutes = [
             xhr.modReqHeaders["Authorization"] =
                 PUBLIC_TOKENS[0];
             delete xhr.modReqHeaders["X-Twitter-Client-Version"];
-            // delete xhr.modReqHeaders["x-act-as-user-id"];
         },
         afterRequest: (xhr) => {
             let data;
@@ -1809,9 +1743,6 @@ const proxyRoutes = [
                 console.error(e);
                 return [];
             }
-            // if (data.errors && data.errors[0]) {
-            //     return [];
-            // }
             let instructions = data?.data?.search_by_raw_query?.search_timeline?.timeline?.instructions;
             let entries = instructions?.find((i) => i.entries);
             if (!entries) {
@@ -2458,15 +2389,8 @@ const proxyRoutes = [
         path: "/1.1/account/verify_credentials.json",
         method: "GET",
         beforeRequest: (xhr) => {
-            // xhr.modUrl = `https://x.com/home/`;
         },
         beforeSendHeaders: (xhr) => {
-            // delete xhr.modReqHeaders["Content-Type"];
-            // delete xhr.modReqHeaders["X-Twitter-Active-User"];
-            // delete xhr.modReqHeaders["X-Twitter-Client-Language"];
-            // delete xhr.modReqHeaders["X-Twitter-Auth-Type"];
-            // delete xhr.modReqHeaders["Authorization"];
-            // delete xhr.modReqHeaders["X-Csrf-Token"];
             xhr.storage.user_id = xhr.modReqHeaders["x-act-as-user-id"];
             xhr.modReqHeaders["Content-Type"] = "application/json";
             xhr.modReqHeaders["X-Twitter-Active-User"] = "yes";
@@ -2488,30 +2412,6 @@ const proxyRoutes = [
             }
             return data;
         },
-        // afterRequest: (xhr) => {
-        //     try {
-        //         const state = extractAssignedJSON(xhr.responseText);
-        //         const user_id = state.session.user_id;
-        //         const user = state.entities.users.entities[user_id];
-        //         if(!user) {
-        //             console.error(`User not found: ${JSON.stringify(state)}`);
-        //             if(localStorage.OTDverifiedUser) {
-        //                 try {
-        //                     verifiedUser = JSON.parse(localStorage.OTDverifiedUser);
-        //                     console.warn("Using verified user from localStorage");
-        //                     return verifiedUser;
-        //                 } catch (e) {}
-        //             }
-        //             throw new Error('User not found');
-        //         }
-        //         verifiedUser = user;
-        //         localStorage.OTDverifiedUser = JSON.stringify(user);
-        //         return user;
-        //     } catch (e) {
-        //         console.error(`Failed to get user data`, e);
-        //         return null;
-        //     }
-        // }
     },
     // DM messages
     {
@@ -2820,10 +2720,8 @@ XMLHttpRequest = function () {
                     try {
                         this.setRequestHeader('x-client-transaction-id', await solveChallenge(parsedUrl.pathname, method));
                     } catch (e) {
-                        // if(localStorage.secureRequests) {
-                            console.error(`Challenge error for ${method} ${parsedUrl.pathname}:`, e);
-                            throw e;
-                        // }
+                        console.error(`Challenge error for ${method} ${parsedUrl.pathname}:`, e);
+                        throw e;
                     }
                 }
             }
