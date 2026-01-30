@@ -2792,10 +2792,28 @@ XMLHttpRequest = function () {
                 if(localStorage.device_id) this.setRequestHeader('X-Client-UUID', localStorage.device_id);
                 if(Date.now() - OTD_INIT_TIME < 3000 && !window.solveChallenge) {
                     console.log('waiting for challenge');
-                    let i = 0;
-                    while(!window.solveChallenge && i++ < 50) {
-                        await new Promise(resolve => setTimeout(resolve, 100));
-                    }
+                    await new Promise(resolve => {
+                        if(window.solveChallenge) return resolve();
+                        let interval;
+                        let resolved = false;
+                        const cleanup = () => {
+                            if(resolved) return;
+                            resolved = true;
+                            if(interval) clearInterval(interval);
+                            window.removeEventListener('OTDChallengeReady', handler);
+                            resolve();
+                        };
+                        const handler = cleanup;
+                        window.addEventListener('OTDChallengeReady', handler);
+                        interval = setInterval(() => {
+                            if(resolved) {
+                                clearInterval(interval);
+                                return;
+                            }
+                            if(window.solveChallenge) cleanup();
+                        }, 50);
+                        setTimeout(cleanup, 5000);
+                    });
                 }
                 if(window.solveChallenge) {
                     try {
