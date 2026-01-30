@@ -46,12 +46,19 @@ observer.observe(document.documentElement, {
 let _originalPush = Array.prototype.push;
 Array.prototype.push = function() {
     try {
-        if(arguments[0]?.[0]?.[0] === "vendor" || arguments[0]?.[0]?.[0] === "main") {
-            console.warn("OldTweetDeck: Blocked attempt to load Twitter script", arguments[0]?.[0]?.[0]);
-            return this.length;
+        const arg = arguments[0];
+        if (arg && Array.isArray(arg) && Array.isArray(arg[0])) {
+            const chunkIds = arg[0];
+            if (chunkIds.includes("vendor") || chunkIds.includes("main")) {
+                // If it's old TweetDeck's webpack, let it through
+                if (this !== window.webpackJsonp) {
+                    console.warn("OldTweetDeck: Blocked attempt to load Twitter script", chunkIds[0]);
+                    return this.length;
+                }
+            }
         }
     } catch(e) {
-        console.error("OldTweetDeck: Error in destroyer push interceptor", e);
+        // Safe catch-all for weird objects
     }
     return _originalPush.apply(this, arguments);
 }
