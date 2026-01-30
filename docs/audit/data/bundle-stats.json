@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-12-08T19:59:06.003Z",
+  "generatedAt": "2026-01-30T20:10:45.502Z",
   "files": {
     "files/bundle.js": {
       "path": "files/bundle.js",
@@ -13,7 +13,7 @@
       "brotliRatio": "10.52%",
       "lines": 76360,
       "checksum": "b42357d34ef4bae66f62b6d9dd875e876cad0fe8f3960e6db298bb62a39edce7",
-      "timestamp": "2025-12-08T19:59:10.999Z"
+      "timestamp": "2026-01-30T20:10:57.029Z"
     },
     "files/vendor.js": {
       "path": "files/vendor.js",
@@ -27,7 +27,7 @@
       "brotliRatio": "16.14%",
       "lines": 81073,
       "checksum": "de38b4f35193737856f1301358f8f085f5b58d3d62f177c04d9a3d2cc9bed472",
-      "timestamp": "2025-12-08T19:59:14.665Z"
+      "timestamp": "2026-01-30T20:11:05.331Z"
     },
     "files/bundle.css": {
       "path": "files/bundle.css",
@@ -41,7 +41,7 @@
       "brotliRatio": "6.92%",
       "lines": 41661,
       "checksum": "d3da932799c75d4563295e158ac2dc9010f1401564a50b7b2941285b90033d13",
-      "timestamp": "2025-12-08T19:59:15.844Z"
+      "timestamp": "2026-01-30T20:11:08.041Z"
     },
     "files/twitter-text.js": {
       "path": "files/twitter-text.js",
@@ -55,31 +55,31 @@
       "brotliRatio": "25.90%",
       "lines": 17,
       "checksum": "fec94491b3bab8ef1f66e71b1ff5e2a1f607e700af4c20f9abd8b29dfdcd5acb",
-      "timestamp": "2025-12-08T19:59:15.987Z"
+      "timestamp": "2026-01-30T20:11:08.353Z"
     },
     "src/interception.js": {
       "path": "src/interception.js",
-      "rawSize": 136322,
-      "rawSizeHuman": "133.13 KB",
-      "gzipSize": 19327,
-      "gzipSizeHuman": "18.87 KB",
-      "brotliSize": 16340,
-      "brotliSizeHuman": "15.96 KB",
-      "gzipRatio": "14.18%",
-      "brotliRatio": "11.99%",
-      "lines": 2899,
-      "checksum": "5e1518e096b828f7bf342ae4fcf86af47caa083afc64a7b6ba4dd686856f71ff",
-      "timestamp": "2025-12-08T19:59:16.126Z"
+      "rawSize": 132998,
+      "rawSizeHuman": "129.88 KB",
+      "gzipSize": 18506,
+      "gzipSizeHuman": "18.07 KB",
+      "brotliSize": 15671,
+      "brotliSizeHuman": "15.3 KB",
+      "gzipRatio": "13.91%",
+      "brotliRatio": "11.78%",
+      "lines": 2816,
+      "checksum": "a3148c9dbcb056225822245fb3ae5dabaab9f1da28442569fcc9b4a612f16a08",
+      "timestamp": "2026-01-30T20:11:08.648Z"
     }
   },
   "totals": {
-    "rawSize": 7412294,
+    "rawSize": 7408970,
     "rawSizeHuman": "7.07 MB",
-    "gzipSize": 1291008,
+    "gzipSize": 1290187,
     "gzipSizeHuman": "1.23 MB",
-    "brotliSize": 915549,
-    "brotliSizeHuman": "894.09 KB",
-    "gzipRatio": "17.42%",
+    "brotliSize": 914880,
+    "brotliSizeHuman": "893.44 KB",
+    "gzipRatio": "17.41%",
     "brotliRatio": "12.35%"
   }
 }
