@@ -1,11 +1,15 @@
-function createModal(html, className, onclose, canclose) {
+function createModal(content, className, onclose, canclose) {
     ensureStyles();
     let modal = document.createElement('div');
     modal.classList.add('otd-modal');
     let modal_content = document.createElement('div');
     modal_content.classList.add('otd-modal-content');
     if(className) modal_content.classList.add(className);
-    modal_content.innerHTML = html;
+    if(typeof content === 'string') {
+        modal_content.innerHTML = content;
+    } else {
+        modal_content.appendChild(content);
+    }
     modal.appendChild(modal_content);
     let close = document.createElement('span');
     close.classList.add('otd-modal-close');
@@ -101,9 +105,16 @@ async function showNotifications() {
         if(notif.maxVersion && !maxVersionCheck(currentVersion, notif.maxVersion)) continue;
         if(notif.minVersion && !minVersionCheck(currentVersion, notif.minVersion)) continue;
         if(document.querySelector('.otd-notification-modal')) continue;
-        let notifHTML = `<div class="otd-notification otd-notification-${notif.type}"><div class="otd-notification-content">${notif.text}</div></div>`;
+
+        let notifEl = document.createElement('div');
+        notifEl.className = `otd-notification otd-notification-${notif.type}`;
+        let contentEl = document.createElement('div');
+        contentEl.className = 'otd-notification-content';
+        contentEl.textContent = notif.text;
+        notifEl.appendChild(contentEl);
+
         let shown = Date.now();
-        createModal(notifHTML, 'otd-notification-modal', () => {
+        createModal(notifEl, 'otd-notification-modal', () => {
             if(!notif.dismissable) return;
             let readNotifs = localStorage.getItem('readNotifications') ? JSON.parse(localStorage.getItem('readNotifications')) : [];
             if(readNotifs.includes(notif.id)) return;

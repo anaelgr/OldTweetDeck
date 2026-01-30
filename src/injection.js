@@ -10,6 +10,7 @@ window.chrome.runtime.getURL = url => {
     return `${isFirefox ? 'moz-extension://' : 'chrome-extension://'}${extId}${url}`;   
 }
 window.addEventListener('message', e => {
+    if(e.source !== window) return;
     if(e.data.extensionId) {
         console.log("got extensionId", e.data.extensionId);
         extId = e.data.extensionId;
@@ -21,9 +22,9 @@ window.addEventListener('message', e => {
         otdtoken = e.data.token;
     }
 });
-window.postMessage('extensionId', '*');
-window.postMessage('cookie', '*');
-window.postMessage('getotdtoken', '*');
+window.postMessage('extensionId', window.location.origin);
+window.postMessage('cookie', window.location.origin);
+window.postMessage('getotdtoken', window.location.origin);
 
 async function getResource(localPath, remoteUrl) {
     let content = "";
