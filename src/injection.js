@@ -160,17 +160,32 @@ async function main() {
         }
     })();
 
-    // FIXED: Use setInterval correctly
-    let cleanInterval = setInterval(function() {
-        let badBody = document.querySelector('body:not(#injected-body)');
-        if (badBody) {
-            let badHead = document.querySelector('head:not(#injected-head)');
-            clearInterval(cleanInterval);
-            if(badHead) badHead.remove();
-            badBody.remove(); 
+    // OPTIMIZED: Use MutationObserver to remove bad body immediately
+    (() => {
+        const clean = () => {
+            let badBody = document.querySelector('body:not(#injected-body)');
+            if (badBody) {
+                let badHead = document.querySelector('head:not(#injected-head)');
+                if(badHead) badHead.remove();
+                badBody.remove();
+                return true;
+            }
+            return false;
+        };
+
+        if(!clean()) {
+            const observer = new MutationObserver((mutations, obs) => {
+                if(clean()) {
+                    obs.disconnect();
+                }
+            });
+            observer.observe(document.documentElement, {
+                childList: true,
+                subtree: false
+            });
+            setTimeout(() => observer.disconnect(), 10000);
         }
-    }, 200);
-    setTimeout(() => clearInterval(cleanInterval), 10000);
+    })();
 
     // FIXED: Use MutationObserver for account injection instead of polling
     function injectAccountObserver() {
