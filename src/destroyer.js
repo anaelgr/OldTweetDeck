@@ -47,14 +47,11 @@ let _originalPush = Array.prototype.push;
 Array.prototype.push = function() {
     try {
         if(arguments[0]?.[0]?.[0] === "vendor" || arguments[0]?.[0]?.[0] === "main") {
-            // Throwing is expensive if caught in a loop, but necessary here to break execution flow of the loader
-            console.log("OldTweetDeck: Blocked attempt to load Twitter script");
-            throw "Twitter killing magic killed Twitter";
+            console.warn("OldTweetDeck: Blocked attempt to load Twitter script", arguments[0]?.[0]?.[0]);
+            return this.length;
         }
     } catch(e) {
-        if(e === "Twitter killing magic killed Twitter") {
-            throw e;
-        }
+        console.error("OldTweetDeck: Error in destroyer push interceptor", e);
     }
     return _originalPush.apply(this, arguments);
 }
