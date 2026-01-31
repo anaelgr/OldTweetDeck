@@ -97,13 +97,14 @@ function solveChallenge(path, method) {
         }
         let id = solveId++;
         solveCallbacks[id] = { resolve, reject, time: Date.now() };
+        const targetOrigin = "https://tweetdeck.dimden.dev";
         if(!solverIframe.contentWindow) {
             solverIframe.addEventListener('load', () => {
-                solverIframe.contentWindow.postMessage({ action: 'solve', id, path, method }, '*');
+                solverIframe.contentWindow.postMessage({ action: 'solve', id, path, method }, targetOrigin);
                 setTimeout(() => {
                     if(solveCallbacks[id]) {
                         // try again
-                        solverIframe.contentWindow.postMessage({ action: 'solve', id, path, method }, '*');
+                        solverIframe.contentWindow.postMessage({ action: 'solve', id, path, method }, targetOrigin);
                     }
                 }, 5000);
                 setTimeout(() => {
@@ -114,11 +115,11 @@ function solveChallenge(path, method) {
                 }, 20000);
             });
         } else {
-            solverIframe.contentWindow.postMessage({ action: 'solve', id, path, method }, '*');
+            solverIframe.contentWindow.postMessage({ action: 'solve', id, path, method }, targetOrigin);
             setTimeout(() => {
                 if(solveCallbacks[id]) {
                     // try again
-                    solverIframe.contentWindow.postMessage({ action: 'solve', id, path, method }, '*');
+                    solverIframe.contentWindow.postMessage({ action: 'solve', id, path, method }, targetOrigin);
                 }
             }, 5000);
             setTimeout(() => {
@@ -193,7 +194,7 @@ window.addEventListener('message', e => {
                 vendor: vendorData,
                 anims,
                 verificationCode: dom.querySelector('meta[name="twitter-site-verification"]').content,
-            }, '*');
+            }, 'https://tweetdeck.dimden.dev');
         }
         if(solverIframe.contentWindow) {
             sendInit();

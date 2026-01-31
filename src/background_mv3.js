@@ -10,14 +10,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === 'setcookie') {
         handleSetCookie(sender).catch(err => console.error("Error setting cookies:", err));
         // No response needed for setcookie in current implementation
-    } else if (request.action === 'getcookie') {
-        chrome.cookies.get({ name: "auth_token", url: "https://x.com" })
-            .then(cookie => sendResponse(cookie))
-            .catch(e => {
-                console.error(e);
-                sendResponse(null);
-            });
-        return true; // Keep message channel open for async response
     }
 });
 

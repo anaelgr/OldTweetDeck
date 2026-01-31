@@ -132,12 +132,6 @@ chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
                 });
             });
         });
-    } else if(request.action === 'getcookie') {
-        chrome.cookies.getAll({url: "https://x.com"}, async cookies => {
-            console.log('getcookie', cookies);
-            sendResponse(cookies);
-        });
-        return true;
     }
 });
 // BetterTweetDeck Logic
