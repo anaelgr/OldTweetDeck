@@ -53,7 +53,7 @@ async function getResource(localPath, remoteUrl) {
     }
 
     // 2. If allowed, try Remote (with Stale-While-Revalidate Cache)
-    if (!OTD_ALWAYS_USE_LOCAL) {
+    if (!OTD_ALWAYS_USE_LOCAL && remoteUrl && (remoteUrl.startsWith('http://') || remoteUrl.startsWith('https://'))) {
         try {
              const cache = await caches.open('otd-resources');
              const cachedRes = await cache.match(remoteUrl);
