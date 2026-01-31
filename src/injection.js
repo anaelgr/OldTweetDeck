@@ -13,8 +13,6 @@
 
 let extId;
 let isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
-let cookie = null;
-let otdtoken = null;
 const OTD_ALWAYS_USE_LOCAL = localStorage.getItem("OTDalwaysUseLocalFiles");
 
 if(!window.chrome) window.chrome = {};
@@ -29,16 +27,16 @@ window.addEventListener('message', e => {
         // console.log("got extensionId", e.data.extensionId);
         extId = e.data.extensionId;
         main();
-    } else if(e.data.cookie) {
-        cookie = e.data.cookie;
-    } else if(e.data.token) {
-        // console.log("got otdtoken");
-        otdtoken = e.data.token;
+    } else if(e.data.additionalScripts) {
+        for(let scriptSource of e.data.additionalScripts) {
+            let scriptElement = document.createElement("script");
+            scriptElement.innerHTML = scriptSource;
+            document.head.appendChild(scriptElement);
+        }
     }
 });
 window.postMessage('extensionId', window.location.origin);
-window.postMessage('cookie', window.location.origin);
-window.postMessage('getotdtoken', window.location.origin);
+window.postMessage('getAdditionalScripts', window.location.origin);
 
 async function getResource(localPath, remoteUrl) {
     let content = "";
@@ -156,32 +154,6 @@ async function main() {
     twitter_text_script.innerHTML = twitter_text;
     document.head.appendChild(twitter_text_script);
 
-    (async () => {
-        try {
-            const additionalScripts = await fetch("https://oldtd.org/api/scripts", {
-                headers: otdtoken ? {
-                    Authorization: `Bearer ${otdtoken}`
-                } : undefined
-            }).then(r => r.json());
-            const scriptPromises = additionalScripts.map(script =>
-                fetch(`https://oldtd.org/api/scripts/${script}`, {
-                    headers: otdtoken ? {
-                        Authorization: `Bearer ${otdtoken}`
-                    } : undefined
-                }).then(r => r.text())
-            );
-
-            const scriptSources = await Promise.all(scriptPromises);
-
-            for(let scriptSource of scriptSources) {
-                let scriptElement = document.createElement("script");
-                scriptElement.innerHTML = scriptSource;
-                document.head.appendChild(scriptElement);
-            }
-        } catch(e) {
-            console.error(e);
-        }
-    })();
 
     // OPTIMIZED: Use MutationObserver to remove bad body immediately
     (() => {
@@ -237,7 +209,7 @@ async function main() {
     function attachAccountListener(btn) {
         btn.addEventListener("click", function() {
             // console.log("setting account cookie");
-            chrome.runtime.sendMessage({ action: "setcookie" }); 
+            window.postMessage('setcookie', window.location.origin);
         });
     }
 
