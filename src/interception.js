@@ -633,7 +633,7 @@ const proxyRoutes = [
         method: "GET",
         beforeRequest: (xhr) => {
             try {
-                let url = new URL(xhr.modUrl);
+                let url = new URL(xhr.modUrl, location.href);
                 let params = new URLSearchParams(url.search);
                 let variables = {"count":40,"includePromotedContent":true,"latestControlAvailable":true};
                 let features = {"rweb_video_screen_enabled":false,"profile_label_improvements_pcf_label_in_post_enabled":true,"responsive_web_profile_redirect_enabled":false,"rweb_tipjar_consumption_enabled":true,"verified_phone_label_enabled":false,"creator_subscriptions_tweet_preview_api_enabled":true,"responsive_web_graphql_timeline_navigation_enabled":true,"responsive_web_graphql_skip_user_profile_image_extensions_enabled":false,"premium_content_api_read_enabled":false,"communities_web_enable_tweet_community_results_fetch":true,"c9s_tweet_anatomy_moderator_badge_enabled":true,"responsive_web_grok_analyze_button_fetch_trends_enabled":false,"responsive_web_grok_analyze_post_followups_enabled":true,"responsive_web_jetfuel_frame":true,"responsive_web_grok_share_attachment_enabled":true,"articles_preview_enabled":true,"responsive_web_edit_tweet_api_enabled":true,"graphql_is_translatable_rweb_tweet_is_translatable_enabled":true,"view_counts_everywhere_api_enabled":true,"longform_notetweets_consumption_enabled":true,"responsive_web_twitter_article_tweet_consumption_enabled":true,"tweet_awards_web_tipping_enabled":false,"responsive_web_grok_show_grok_translated_post":false,"responsive_web_grok_analysis_button_from_backend":true,"creator_subscriptions_quote_tweet_preview_enabled":false,"freedom_of_speech_not_reach_fetch_enabled":true,"standardized_nudges_misinfo":true,"tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled":true,"longform_notetweets_rich_text_read_enabled":true,"longform_notetweets_inline_media_enabled":true,"responsive_web_grok_image_annotation_enabled":true,"responsive_web_grok_imagine_annotation_enabled":true,"responsive_web_grok_community_note_auto_translation_is_enabled":false,"responsive_web_enhance_cards_enabled":false};
@@ -827,7 +827,7 @@ const proxyRoutes = [
         method: "GET",
         beforeRequest: (xhr) => {
             try {
-                let url = new URL(xhr.modUrl);
+                let url = new URL(xhr.modUrl, location.href);
                 let params = new URLSearchParams(url.search);
                 let variables = { count: 40, includePromotedContent: false };
                 let features = {"rweb_video_screen_enabled":false,"payments_enabled":false,"profile_label_improvements_pcf_label_in_post_enabled":true,"rweb_tipjar_consumption_enabled":true,"verified_phone_label_enabled":false,"creator_subscriptions_tweet_preview_api_enabled":true,"responsive_web_graphql_timeline_navigation_enabled":true,"responsive_web_graphql_skip_user_profile_image_extensions_enabled":false,"premium_content_api_read_enabled":false,"communities_web_enable_tweet_community_results_fetch":true,"c9s_tweet_anatomy_moderator_badge_enabled":true,"responsive_web_grok_analyze_button_fetch_trends_enabled":false,"responsive_web_grok_analyze_post_followups_enabled":true,"responsive_web_jetfuel_frame":true,"responsive_web_grok_share_attachment_enabled":true,"articles_preview_enabled":true,"responsive_web_edit_tweet_api_enabled":true,"graphql_is_translatable_rweb_tweet_is_translatable_enabled":true,"view_counts_everywhere_api_enabled":true,"longform_notetweets_consumption_enabled":true,"responsive_web_twitter_article_tweet_consumption_enabled":true,"tweet_awards_web_tipping_enabled":false,"responsive_web_grok_show_grok_translated_post":false,"responsive_web_grok_analysis_button_from_backend":false,"creator_subscriptions_quote_tweet_preview_enabled":false,"freedom_of_speech_not_reach_fetch_enabled":true,"standardized_nudges_misinfo":true,"tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled":true,"longform_notetweets_rich_text_read_enabled":true,"longform_notetweets_inline_media_enabled":true,"responsive_web_grok_image_annotation_enabled":true,"responsive_web_grok_community_note_auto_translation_is_enabled":false,"responsive_web_enhance_cards_enabled":false};
@@ -961,7 +961,7 @@ const proxyRoutes = [
         method: "GET",
         beforeRequest: (xhr) => {
             try {
-                let url = new URL(xhr.modUrl);
+                let url = new URL(xhr.modUrl, location.href);
                 let params = new URLSearchParams(url.search);
                 let user_id = params.get("user_id");
                 let variables = {
@@ -1153,7 +1153,7 @@ const proxyRoutes = [
         method: "GET",
         beforeRequest: (xhr) => {
             try {
-                let url = new URL(xhr.modUrl);
+                let url = new URL(xhr.modUrl, location.href);
                 let params = new URLSearchParams(url.search);
                 let variables = {
                     "count": 40,
@@ -1260,7 +1260,7 @@ const proxyRoutes = [
         path: "/1.1/activity/about_me.json",
         method: "GET",
         beforeRequest: (xhr) => {
-            const params = new URLSearchParams(xhr.modUrl);
+            const params = new URL(xhr.modUrl, location.href).searchParams;
             const since_id = params.get("since_id");
             const max_id = params.get("max_id");
             const user_id = xhr.modReqHeaders["x-act-as-user-id"] ?? params.get("user_id") ?? getCurrentUserId();
@@ -1444,7 +1444,7 @@ const proxyRoutes = [
         path: "/1.1/statuses/mentions_timeline.json",
         method: "GET",
         beforeRequest: (xhr) => {
-            const params = new URLSearchParams(xhr.modUrl);
+            const params = new URL(xhr.modUrl, location.href).searchParams;
             const since_id = params.get("since_id");
             const max_id = params.get("max_id");
             const user_id = xhr.modReqHeaders["x-act-as-user-id"] ?? params.get("user_id") ?? getCurrentUserId();
@@ -1527,7 +1527,7 @@ const proxyRoutes = [
         method: "GET",
         beforeRequest: (xhr) => {
             try {
-                let url = new URL(xhr.modUrl);
+                let url = new URL(xhr.modUrl, location.href);
                 let params = new URLSearchParams(url.search);
                 let user_id = params.get("user_id") ?? getCurrentUserId();
                 let variables = {
@@ -1687,7 +1687,7 @@ const proxyRoutes = [
         method: "GET",
         beforeRequest: (xhr) => {
             try {
-                let url = new URL(xhr.modUrl);
+                let url = new URL(xhr.modUrl, location.href);
                 let params = new URLSearchParams(url.search);
                 let variables = {
                     rawQuery: params.get("q"),
@@ -1801,7 +1801,7 @@ const proxyRoutes = [
         method: "GET",
         beforeRequest: (xhr) => {
             try {
-                let url = new URL(xhr.modUrl);
+                let url = new URL(xhr.modUrl, location.href);
                 let params = new URLSearchParams(url.search);
                 let variables = {
                     rawQuery: params.get("q"),
@@ -1972,7 +1972,7 @@ const proxyRoutes = [
         path: /\/1.1\/statuses\/retweet\/(\d+).json/,
         method: "POST",
         beforeRequest: (xhr) => {
-            let originalUrl = new URL(xhr.originalUrl);
+            let originalUrl = new URL(xhr.originalUrl, location.href);
             xhr.storage.tweet_id = originalUrl.pathname.match(
                 /\/1.1\/statuses\/retweet\/(\d+).json/
             )[1];
@@ -2025,7 +2025,7 @@ const proxyRoutes = [
         path: /\/1.1\/statuses\/unretweet\/(\d+).json/,
         method: "POST",
         beforeRequest: (xhr) => {
-            let originalUrl = new URL(xhr.originalUrl);
+            let originalUrl = new URL(xhr.originalUrl, location.href);
             xhr.storage.tweet_id = originalUrl.pathname.match(
                 /\/1.1\/statuses\/unretweet\/(\d+).json/
             )[1];
@@ -2076,7 +2076,7 @@ const proxyRoutes = [
         path: /\/1.1\/statuses\/show\/(\d+).json/,
         method: "GET",
         beforeRequest: (xhr) => {
-            let originalUrl = new URL(xhr.originalUrl);
+            let originalUrl = new URL(xhr.originalUrl, location.href);
             xhr.storage.tweet_id = originalUrl.pathname.match(
                 /\/1.1\/statuses\/show\/(\d+).json/
             )[1];
@@ -2150,7 +2150,7 @@ const proxyRoutes = [
         path: "/1.1/statuses/show.json",
         method: "GET",
         beforeRequest: (xhr) => {
-            let originalUrl = new URL(xhr.originalUrl);
+            let originalUrl = new URL(xhr.originalUrl, location.href);
             xhr.storage.tweet_id = originalUrl.searchParams.get("id");
             xhr.modUrl = `https://${location.hostname}/i/api/graphql/KwGBbJZc6DBx8EKmyQSP7g/TweetDetail?variables=${encodeURIComponent(
                 JSON.stringify({
@@ -2223,7 +2223,7 @@ const proxyRoutes = [
         path: /\/1.1\/statuses\/destroy\/(\d+).json/,
         method: "POST",
         beforeRequest: (xhr) => {
-            let originalUrl = new URL(xhr.originalUrl);
+            let originalUrl = new URL(xhr.originalUrl, location.href);
             xhr.storage.tweet_id = originalUrl.pathname.match(
                 /\/1.1\/statuses\/destroy\/(\d+).json/
             )[1];
@@ -2249,7 +2249,7 @@ const proxyRoutes = [
         path: /\/2\/timeline\/conversation\/(\d+).json/,
         method: "GET",
         beforeRequest: (xhr) => {
-            let originalUrl = new URL(xhr.originalUrl);
+            let originalUrl = new URL(xhr.originalUrl, location.href);
             let params = new URLSearchParams(originalUrl.search);
 
             params.delete("ext");
@@ -2435,7 +2435,7 @@ const proxyRoutes = [
         path: "/1.1/translations/show.json",
         method: "GET",
         beforeRequest: (xhr) => {
-            let url = new URL(xhr.modUrl);
+            let url = new URL(xhr.modUrl, location.href);
             let params = new URLSearchParams(url.search);
             let tweet_id = params.get("id");
             let dest = params.get("dest");
@@ -2679,7 +2679,7 @@ XMLHttpRequest = function () {
 
 
             try {
-                let parsedUrl = new URL(url);
+                let parsedUrl = new URL(url, location.href);
                 this.proxyRoute = proxyRoutes.find((route) => {
                     if(!route) return false;
                     if (route.method.toUpperCase() !== method.toUpperCase()) return false;
@@ -2707,7 +2707,7 @@ XMLHttpRequest = function () {
             this.modReqHeaders[name] = value;
         },
         async send(body = null) {
-            let parsedUrl = new URL(this.modUrl);
+            let parsedUrl = new URL(this.modUrl, location.href);
             let method = this.modMethod;
             if(!method) {
                 method = "GET";
@@ -2717,10 +2717,11 @@ XMLHttpRequest = function () {
             if(
                 this.readyState === 1 &&
                 (
-                    this.modUrl.includes("api.twitter.com") || 
-                    this.modUrl.includes("api.x.com") || 
-                    this.modUrl.includes("twitter.com/i/api") ||
-                    this.modUrl.includes("x.com/i/api")
+                    parsedUrl.href.includes("api.twitter.com") ||
+                    parsedUrl.href.includes("api.x.com") ||
+                    parsedUrl.href.includes("twitter.com/i/api") ||
+                    parsedUrl.href.includes("x.com/i/api") ||
+                    parsedUrl.pathname.includes("/i/api")
                 )
             ) {
                 if(localStorage.device_id) this.setRequestHeader('X-Client-UUID', localStorage.device_id);
