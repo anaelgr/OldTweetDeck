@@ -61,7 +61,15 @@ Array.prototype.push = function() {
             // If it's a webpack chunk push (array of 2 or 3 elements, first is array of ids)
             // We only allow it if it's OldTweetDeck's webpackJsonp
             if (this !== window.webpackJsonp && typeof chunkIds[0] !== 'undefined') {
-                console.warn("OldTweetDeck: Blocked attempt to load unknown script chunk", chunkIds);
+                // We only log if it's not a known Twitter chunk to reduce console noise
+                const firstChunk = String(chunkIds[0]);
+                const isTwitterChunk = firstChunk.startsWith('i18n/') ||
+                                     ['vendor', 'main', 'runtime', 'shared', 'emojis'].includes(firstChunk) ||
+                                     !isNaN(firstChunk);
+
+                if (!isTwitterChunk) {
+                    console.warn("OldTweetDeck: Blocked attempt to load unknown script chunk", chunkIds);
+                }
                 return this.length;
             }
         }
