@@ -111,20 +111,29 @@ async function main() {
     let html = await fetch(chrome.runtime.getURL('/files/index.html')).then(r => r.text());
     document.documentElement.innerHTML = html;
 
-    // Parallel fetch of all resources using the smart strategy
+    // CSS should be injected as early as possible to prevent FOUC
+    const cssPromise = getResource('/files/bundle.css', 'https://raw.githubusercontent.com/dimdenGD/OldTweetDeck/main/files/bundle.css');
+    cssPromise.then(bundle_css => {
+        if (bundle_css) {
+            let bundle_css_style = document.createElement("style");
+            bundle_css_style.innerHTML = bundle_css;
+            document.head.appendChild(bundle_css_style);
+        }
+    });
+
+    // Parallel fetch of scripts
     const resources = [
         { key: 'challenge_js', local: '/src/challenge.js', remote: 'https://raw.githubusercontent.com/dimdenGD/OldTweetDeck/main/src/challenge.js' },
         { key: 'interception_js', local: '/src/interception.js', remote: 'https://raw.githubusercontent.com/dimdenGD/OldTweetDeck/main/src/interception.js' },
         { key: 'vendor_js', local: '/files/vendor.js', remote: 'https://raw.githubusercontent.com/dimdenGD/OldTweetDeck/main/files/vendor.js' },
         { key: 'bundle_js', local: '/files/bundle.js', remote: 'https://raw.githubusercontent.com/dimdenGD/OldTweetDeck/main/files/bundle.js' },
-        { key: 'bundle_css', local: '/files/bundle.css', remote: 'https://raw.githubusercontent.com/dimdenGD/OldTweetDeck/main/files/bundle.css' },
         { key: 'twitter_text', local: '/files/twitter-text.js', remote: 'https://raw.githubusercontent.com/dimdenGD/OldTweetDeck/main/files/twitter-text.js' }
     ];
 
     const results = await Promise.all(resources.map(res => getResource(res.local, res.remote)));
 
     // Map results back to variables
-    const [challenge_js, interception_js, vendor_js, bundle_js, bundle_css, twitter_text] = results;
+    const [challenge_js, interception_js, vendor_js, bundle_js, twitter_text] = results;
 
     let challenge_js_script = document.createElement("script");
     let challenge_js_content = challenge_js.replaceAll('SOLVER_URL', chrome.runtime.getURL("solver.html"));
@@ -137,10 +146,6 @@ async function main() {
     let interception_js_script = document.createElement("script");
     interception_js_script.innerHTML = interception_js;
     document.head.appendChild(interception_js_script);
-
-    let bundle_css_style = document.createElement("style");
-    bundle_css_style.innerHTML = bundle_css;
-    document.head.appendChild(bundle_css_style);
 
     let vendor_js_script = document.createElement("script");
     vendor_js_script.innerHTML = vendor_js;

@@ -6,7 +6,7 @@ function createModal(content, className, onclose, canclose) {
     modal_content.classList.add('otd-modal-content');
     if(className) modal_content.classList.add(className);
     if(typeof content === 'string') {
-        modal_content.innerHTML = content;
+        modal_content.textContent = content;
     } else {
         modal_content.appendChild(content);
     }
@@ -15,16 +15,16 @@ function createModal(content, className, onclose, canclose) {
     close.classList.add('otd-modal-close');
     close.title = "ESC";
     close.innerHTML = '&times;';
-    document.body.style.overflowY = 'hidden';
+    document.body.classList.add('otd-no-scroll');
     function removeModal() {
         modal.remove();
         let event = new Event('findActiveTweet');
         document.dispatchEvent(event);
         document.removeEventListener('keydown', escapeEvent);
         if(onclose) onclose();
-        let modals = document.getElementsByClassName('modal');
+        let modals = document.getElementsByClassName('otd-modal');
         if(modals.length === 0) {
-            document.body.style.overflowY = 'auto';
+            document.body.classList.remove('otd-no-scroll');
         }
     }
     modal.removeModal = removeModal;
@@ -133,70 +133,88 @@ async function showNotifications() {
 
 let style = document.createElement('style');
 style.innerHTML = /*css*/`
+:root {
+    --otd-modal-bg: white;
+    --otd-modal-color: black;
+    --otd-modal-overlay: rgba(0, 0, 0, 0.4);
+    --otd-notif-info: "ℹ️";
+    --otd-notif-warning: "⚠️";
+    --otd-notif-error: "❌";
+}
+
+html.dark {
+    --otd-modal-bg: #15202b;
+    --otd-modal-color: white;
+    --otd-modal-overlay: rgba(0, 0, 0, 0.6);
+}
+
+.otd-no-scroll {
+    overflow-y: hidden !important;
+}
+
 .otd-modal {
     position: fixed;
-    z-index: 100000;
+    z-index: 200000;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow: auto;
-    background-color: rgb(0, 0, 0);
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: var(--otd-modal-overlay);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .otd-modal-content {
     width: fit-content;
     min-width: 500px;
+    max-width: 90%;
     margin: auto;
-    border-radius: 5px;
+    border-radius: 8px;
     padding: 20px;
-    background-color: white;
-    color: black;
-    top: 20%;
+    background-color: var(--otd-modal-bg);
+    color: var(--otd-modal-color);
     position: relative;
-    max-height: 60%;
-    overflow-y: inherit;
+    max-height: 80%;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
     animation: opac 0.2s ease-in-out;
 }
-html.dark .otd-modal-content {
-    background-color: #15202b;
-    color: white;
-}
+
 .otd-notification-warning > .otd-notification-content::before {
-    content: "⚠️";
-    margin-right: 5px;
+    content: var(--otd-notif-warning);
+    margin-right: 8px;
 }
 .otd-notification-error > .otd-notification-content::before {
-    content: "❌";
-    margin-right: 5px;
+    content: var(--otd-notif-error);
+    margin-right: 8px;
 }
 .otd-notification-info > .otd-notification-content::before {
-    content: "ℹ️";
-    margin-right: 5px;
+    content: var(--otd-notif-info);
+    margin-right: 8px;
 }
+
 @keyframes opac {
-    0% {
-        opacity: 0
-    }
-    100% {
-        opacity: 1
-    }
+    0% { opacity: 0; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); }
 }
 
 .otd-modal-close {
     color: #aaaaaa;
     float: right;
-    font-size: 20px;
+    font-size: 24px;
     font-weight: bold;
-    top: 0;
-    right: 5px;
+    top: 5px;
+    right: 10px;
     position: absolute;
+    line-height: 1;
+    transition: color 0.2s;
 }
 
 .otd-modal-close:hover,
 .otd-modal-close:focus {
-    color: black;
+    color: var(--otd-modal-color);
     text-decoration: none;
     cursor: pointer;
 }

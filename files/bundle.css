@@ -6,6 +6,7 @@
             format("woff");
     font-weight: 400;
     font-style: normal;
+    font-display: swap;
 }
 html {
     line-height: 1.15;
@@ -41657,4 +41658,77 @@ body:before {
 
 .js-mediatable .l-table {
     height: 100% !important;
+}
+
+/* --- OldTweetDeck Modernization & Refinements --- */
+:root {
+    --otd-accent-color: #1da1f2;
+    --otd-accent-hover: #1991db;
+    --otd-scrollbar-track: #f5f8fa;
+    --otd-scrollbar-thumb: #ccd6dd;
+    --otd-scrollbar-thumb-hover: #8899a6;
+}
+
+html.dark {
+    --otd-scrollbar-track: #15202b;
+    --otd-scrollbar-thumb: #38444d;
+    --otd-scrollbar-thumb-hover: #657786;
+}
+
+/* Smoother scrollbars globally */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--otd-scrollbar-thumb) var(--otd-scrollbar-track);
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--otd-scrollbar-track);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--otd-scrollbar-thumb);
+    border-radius: 10px;
+    border: 2px solid var(--otd-scrollbar-track);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--otd-scrollbar-thumb-hover);
+}
+
+/* Fix for font rendering */
+html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* Prevent layout jumps when scrollbar appears/disappears */
+html {
+    scrollbar-gutter: stable;
+}
+
+/* Prevent image dragging in columns */
+.column img {
+    -webkit-user-drag: none;
+    user-drag: none;
+}
+
+/* Transition for theme switching */
+body {
+    transition: background-color 0.3s ease;
+}
+
+/* Better focus states for accessibility */
+.is-actionable:focus-visible,
+button:focus-visible,
+a:focus-visible {
+    outline: 2px solid var(--otd-accent-color) !important;
+    outline-offset: 2px;
+}
+
+/* Fix for modals in bundle.css that might be overridden by notifications.js */
+.otd-modal-content {
+    box-sizing: border-box;
 }
