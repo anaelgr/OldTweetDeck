@@ -5,7 +5,10 @@ if (chrome.webRequest.OnHeadersReceivedOptions.hasOwnProperty("EXTRA_HEADERS")) 
 
 chrome.webRequest.onHeadersReceived.addListener(
     function(details) {
-        let headers = details.responseHeaders.filter(header => header.name.toLowerCase() !== 'content-security-policy' && header.name.toLowerCase() !== 'location');
+        let headers = details.responseHeaders.filter(header => {
+            const name = header.name.toLowerCase();
+            return name !== 'content-security-policy' && name !== 'location';
+        });
         return {
             responseHeaders: headers
         }
