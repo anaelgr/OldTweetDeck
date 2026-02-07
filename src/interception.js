@@ -2765,8 +2765,10 @@ XMLHttpRequest = function () {
                 this.proxyRoute.beforeSendHeaders(this);
             }
             try {
-                for (const [name, value] of Object.entries(this.modReqHeaders)) {
-                    this.setRequestHeader(name, value);
+                for (const name in this.modReqHeaders) {
+                    if (Object.prototype.hasOwnProperty.call(this.modReqHeaders, name)) {
+                        this.setRequestHeader(name, this.modReqHeaders[name]);
+                    }
                 }
             } catch(e) {
                 if(!String(e).includes('OPENED')) {
