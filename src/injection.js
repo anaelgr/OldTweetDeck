@@ -11,7 +11,7 @@
  * CONSTRAINT: The user has explicitly requested NOT to disable this mechanism.
  */
 
-let extId;
+let extId = window.OTD_EXTENSION_ID;
 let isFirefox = navigator.userAgent.indexOf('Firefox') > -1;
 const OTD_ALWAYS_USE_LOCAL = localStorage.getItem("OTDalwaysUseLocalFiles");
 
@@ -21,12 +21,19 @@ window.chrome.runtime.getURL = url => {
     if(!url.startsWith('/')) url = `/${url}`;
     return `${isFirefox ? 'moz-extension://' : 'chrome-extension://'}${extId}${url}`;   
 }
+
+if (extId) {
+    // Already have ID from content script injection
+    main();
+}
+
 window.addEventListener('message', e => {
     if(e.source !== window) return;
     if(e.data.extensionId) {
-        // console.log("got extensionId", e.data.extensionId);
-        extId = e.data.extensionId;
-        main();
+        if (!extId) {
+            extId = e.data.extensionId;
+            main();
+        }
     } else if(e.data.additionalScripts) {
         for(let scriptSource of e.data.additionalScripts) {
             let scriptElement = document.createElement("script");
@@ -39,89 +46,65 @@ window.postMessage('extensionId', window.location.origin);
 window.postMessage('getAdditionalScripts', window.location.origin);
 
 async function getResource(localPath, remoteUrl) {
-    let content = "";
-    
-    // 1. Always try Local first as baseline
+    const fetchLocal = () => fetch(chrome.runtime.getURL(localPath)).then(r => r.text()).catch(() => "");
+
+    // 1. If remote is disabled, go straight to local
+    if (OTD_ALWAYS_USE_LOCAL || !remoteUrl || (!remoteUrl.startsWith('http://') && !remoteUrl.startsWith('https://'))) {
+        return fetchLocal();
+    }
+
     try {
-        const localUrl = chrome.runtime.getURL(localPath);
-        const r = await fetch(localUrl);
-        if (r.ok) content = await r.text();
-    } catch (e) {
-        console.warn(`Local fetch failed for ${localPath}`, e);
-    }
+        const cache = await caches.open('otd-resources');
+        const cachedRes = await cache.match(remoteUrl);
 
-    // 2. If allowed, try Remote (with Stale-While-Revalidate Cache)
-    if (!OTD_ALWAYS_USE_LOCAL && remoteUrl && (remoteUrl.startsWith('http://') || remoteUrl.startsWith('https://'))) {
-        try {
-             const cache = await caches.open('otd-resources');
-             const cachedRes = await cache.match(remoteUrl);
+        // Background update function (Stale-While-Revalidate)
+        const updateCache = async () => {
+            try {
+                const r = await fetch(remoteUrl);
+                if (r.ok) {
+                    const txt = await r.text();
+                    if (txt.length > 30) {
+                        await cache.put(remoteUrl, new Response(txt));
+                    }
+                }
+            } catch (e) { /* background update failed, next load will try again */ }
+        };
 
-             // Background update function
-             const updateCache = async () => {
-                 try {
-                     const r = await fetch(remoteUrl);
-                     if (r.ok) {
-                         const txt = await r.text();
-                         if (txt.length > 30) {
-                             await cache.put(remoteUrl, new Response(txt));
-                             // console.log(`Background updated: ${remoteUrl}`);
-                         }
-                     }
-                 } catch (e) { console.error("Background update failed", e); }
-             };
-
-             if (cachedRes) {
-                 const cachedTxt = await cachedRes.text();
-                 if (cachedTxt.length > 30) {
-                     content = cachedTxt;
-                     // console.log(`Using cached ${remoteUrl}`);
-                     // Trigger background update without awaiting
-                     setTimeout(updateCache, 100);
-                 } else {
-                     // Invalid cache, treat as no cache
-                     await updateCache();
-                     // We might have updated cache now, try to read it?
-                     // Or just fall back to what we fetched.
-                     // For simplicity, if cache was bad, we rely on the fetch inside updateCache
-                     // but we need the result.
-                     // Re-fetch for use:
-                     const r = await fetch(remoteUrl);
-                     if(r.ok) content = await r.text();
-                 }
-             } else {
-                 // No cache, blocking fetch
-                 // console.log(`Fetching remote (no cache) ${remoteUrl}`);
-                 const r = await fetch(remoteUrl);
-                 if (r.ok) {
-                     const txt = await r.text();
-                     if (txt.length > 30) {
-                         content = txt;
-                         await cache.put(remoteUrl, new Response(txt));
-                     }
-                 }
-             }
-        } catch (e) {
-            console.error(`Remote logic failed for ${remoteUrl}, using local`, e);
+        // 2. If we have a valid cached version, return it immediately and update in background
+        if (cachedRes) {
+            const cachedTxt = await cachedRes.text();
+            if (cachedTxt.length > 30) {
+                setTimeout(updateCache, 100);
+                return cachedTxt;
+            }
         }
+
+        // 3. Not in cache or invalid, try to fetch remote
+        try {
+            const r = await fetch(remoteUrl);
+            if (r.ok) {
+                const txt = await r.text();
+                if (txt.length > 30) {
+                    await cache.put(remoteUrl, new Response(txt));
+                    return txt;
+                }
+            }
+        } catch (e) {
+            console.warn(`Remote fetch failed for ${remoteUrl}, falling back to local`, e);
+        }
+    } catch (e) {
+        console.error(`Cache logic failed for ${remoteUrl}`, e);
     }
-    return content;
+
+    // 4. Fallback to local if remote/cache fails
+    return fetchLocal();
 }
 
 async function main() {
-    let html = await fetch(chrome.runtime.getURL('/files/index.html')).then(r => r.text());
-    document.documentElement.innerHTML = html;
-
-    // CSS should be injected as early as possible to prevent FOUC
+    // Start fetching all resources in parallel
     const cssPromise = getResource('/files/bundle.css', 'https://raw.githubusercontent.com/dimdenGD/OldTweetDeck/main/files/bundle.css');
-    cssPromise.then(bundle_css => {
-        if (bundle_css) {
-            let bundle_css_style = document.createElement("style");
-            bundle_css_style.innerHTML = bundle_css;
-            document.head.appendChild(bundle_css_style);
-        }
-    });
+    const htmlPromise = fetch(chrome.runtime.getURL('/files/index.html')).then(r => r.text());
 
-    // Parallel fetch of scripts
     const resources = [
         { key: 'challenge_js', local: '/src/challenge.js', remote: 'https://raw.githubusercontent.com/dimdenGD/OldTweetDeck/main/src/challenge.js' },
         { key: 'interception_js', local: '/src/interception.js', remote: 'https://raw.githubusercontent.com/dimdenGD/OldTweetDeck/main/src/interception.js' },
@@ -130,7 +113,24 @@ async function main() {
         { key: 'twitter_text', local: '/files/twitter-text.js', remote: 'https://raw.githubusercontent.com/dimdenGD/OldTweetDeck/main/files/twitter-text.js' }
     ];
 
-    const results = await Promise.all(resources.map(res => getResource(res.local, res.remote)));
+    const scriptPromises = resources.map(res => getResource(res.local, res.remote));
+
+    // Wait for HTML and CSS first to prevent FOUC
+    const [bundle_css, html_raw] = await Promise.all([cssPromise, htmlPromise]);
+
+    let html = html_raw;
+    if (bundle_css) {
+        // Use Blob URL for large CSS to improve parsing performance and keep DOM clean
+        const blob = new Blob([bundle_css], { type: 'text/css' });
+        const cssUrl = URL.createObjectURL(blob);
+        const styleTag = `<link rel="stylesheet" id="otd-bundle-css" href="${cssUrl}">`;
+        html = html.replace('</head>', `${styleTag}</head>`);
+    }
+
+    document.documentElement.innerHTML = html;
+
+    // Now wait for scripts
+    const results = await Promise.all(scriptPromises);
 
     // Map results back to variables
     const [challenge_js, interception_js, vendor_js, bundle_js, twitter_text] = results;

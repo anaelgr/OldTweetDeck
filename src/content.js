@@ -1,3 +1,14 @@
+// Immediate injection of extension ID to avoid postMessage latency for injection.js
+try {
+    const extId = chrome.runtime.getURL('/injection.js').split("/")[2];
+    const script = document.createElement('script');
+    script.textContent = `window.OTD_EXTENSION_ID = "${extId}";`;
+    (document.head || document.documentElement).appendChild(script);
+    script.remove();
+} catch (e) {
+    console.error("OldTweetDeck: Failed to inject extension ID", e);
+}
+
 window.addEventListener('message', async e => {
     if(e.source !== window) return;
     if(e.data === 'extensionId') {
