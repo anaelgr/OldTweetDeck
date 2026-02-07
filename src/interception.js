@@ -620,12 +620,13 @@ function formatTwitterStyle(date) {
     return `${day} ${month} ${dayNum} ${hours}:${mins}:${secs} +0000 ${year}`;
 }
 
+const EMULATE_HEADERS = {
+    "content-type": () => "application/json"
+};
 function emulateResponse(xhr) {
     xhr._status = 200;
     xhr._readyState = 4;
-    xhr.responseHeaderOverride = {
-        "content-type": () => "application/json"
-    }
+    xhr.responseHeaderOverride = EMULATE_HEADERS;
     const loadEvent = new ProgressEvent('load');
     loadEvent.lengthComputable = true;
     loadEvent.loaded = 1;
