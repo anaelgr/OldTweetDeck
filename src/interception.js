@@ -602,12 +602,11 @@ function extractAssignedJSON(html, varName = "window.__INITIAL_STATE__") {
       return out;
     }
 }
+const TWITTER_DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const TWITTER_MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 function formatTwitterStyle(date) {
-    const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-  
-    const day = days[date.getUTCDay()];
-    const month = months[date.getUTCMonth()];
+    const day = TWITTER_DAYS[date.getUTCDay()];
+    const month = TWITTER_MONTHS[date.getUTCMonth()];
     const dayNum = String(date.getUTCDate()).padStart(2, "0");
     const hours = String(date.getUTCHours()).padStart(2, "0");
     const mins = String(date.getUTCMinutes()).padStart(2, "0");
