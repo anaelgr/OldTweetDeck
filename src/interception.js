@@ -160,6 +160,8 @@ function parseTweet(res) {
             tweet.id = +tweet.id_str;
         }
         let result = res.core.user_results.result;
+        if (result?.result) result = result.result;
+        if (!result || !result.legacy) return;
         tweet.conversation_id = +tweet.conversation_id_str;
         tweet.text = tweet.full_text;
         tweet.user = result.legacy;
@@ -272,8 +274,9 @@ function parseTweet(res) {
                 }
             }
             tweet.retweeted_status = result.legacy;
-            if (tweet.retweeted_status && result.core.user_results.result.legacy) {
-                let user_result = result?.core?.user_results?.result;
+            let user_result = result.core.user_results.result;
+            if (user_result?.result) user_result = user_result.result;
+            if (tweet.retweeted_status && user_result?.legacy) {
                 tweet.retweeted_status.text = tweet.retweeted_status.full_text;
                 tweet.retweeted_status.id = +tweet.retweeted_status.id_str;
                 tweet.retweeted_status.conversation_id = +tweet.retweeted_status.conversation_id_str;
@@ -363,13 +366,14 @@ function parseTweet(res) {
                 tweet.quoted_status.conversation_id = +tweet.quoted_status.conversation_id_str;
                 tweet.quoted_status.text = tweet.quoted_status.full_text;
                 if (tweet.quoted_status) {
-                    tweet.quoted_status.user = result.core.user_results.result.legacy;
+                    let user_result = result.core.user_results.result;
+                    if (user_result?.result) user_result = user_result.result;
+                    tweet.quoted_status.user = user_result?.legacy;
                     if (!tweet.quoted_status.user) {
                         delete tweet.quoted_status;
                     } else {
                         tweet.quoted_status.user.id_str = tweet.quoted_status.user_id_str;
                         tweet.quoted_status.user.id = +tweet.quoted_status.user_id_str;
-                        let user_result = result?.core?.user_results?.result;
                         if(!tweet.quoted_status.user.profile_image_url && user_result?.avatar?.image_url) {
                             tweet.quoted_status.user.profile_image_url = user_result.avatar.image_url;
                             tweet.quoted_status.user.profile_image_url_https = tweet.quoted_status.user.profile_image_url.replace("http://", "https://");
@@ -1874,9 +1878,10 @@ const proxyRoutes = [
             let res = [];
             for (let entry of entries) {
                 if (entry.entryId.startsWith("sq-I-u-") || entry.entryId.startsWith("user-")) {
-                    let result = entry.content.itemContent.user_results.result;
-                    if (!result || !result.legacy) {
-                        // console.log("Bug: no user", entry);
+                    let result = entry.content.itemContent?.user_results?.result;
+                    if (!result) continue;
+                    if (result.result) result = result.result;
+                    if (!result.legacy) {
                         continue;
                     }
                     let user = result.legacy;
