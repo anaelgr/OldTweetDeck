@@ -8,8 +8,8 @@ const AdmZip = require('adm-zip');
 async function copyDir(src, dest) {
     const entries = await fsp.readdir(src, { withFileTypes: true });
     await fsp.mkdir(dest);
-    for (let entry of entries) {
-        if(entry.name === '.git' || entry.name === '.github' || entry.name === '_metadata' || entry.name === 'node_modules' || entry.name === 'build') continue;
+    await Promise.all(entries.map(async (entry) => {
+        if(entry.name === '.git' || entry.name === '.github' || entry.name === '_metadata' || entry.name === 'node_modules' || entry.name === 'build') return;
         const srcPath = path.join(src, entry.name);
         const destPath = path.join(dest, entry.name);
         if (entry.isDirectory()) {
@@ -17,7 +17,7 @@ async function copyDir(src, dest) {
         } else {
             await fsp.copyFile(srcPath, destPath);
         }
-    }
+    }));
 }
 
 if(!fs.existsSync('./build')) {
@@ -32,8 +32,10 @@ if(fs.existsSync('./build/OldTweetDeckFirefox')) {
 }
 
 console.log("Copying...");
-copyDir('./', './build/OldTweetDeckFirefox').then(async () => {
-    await copyDir('./', './build/OldTweetDeckTempChrome');
+Promise.all([
+    copyDir('./', './build/OldTweetDeckFirefox'),
+    copyDir('./', './build/OldTweetDeckTempChrome')
+]).then(async () => {
     console.log("Copied!");
     console.log("Patching...");
 
