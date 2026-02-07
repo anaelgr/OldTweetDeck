@@ -1090,10 +1090,11 @@ document.body.addEventListener("click", function (e) {
                     for (n = 0, s = (i = S.extractMentionEntities(e)).length; n < s; n++) {
                         r = i[n];
                         (a = S.getEntityOverlap(r, t))
-                            ? r.list_slug &&
-                              r.indices[0] === a.indices[0] &&
-                              ((a.indices = r.indices), (a.list_slug = r.list_slug))
-                            : false && t.user_mentions.push(r); // weird bug that adds mentions randomly
+                            ? a.screen_name &&
+                              a.screen_name.toLowerCase() === r.screen_name.toLowerCase() &&
+                              ((a.indices = r.indices),
+                              r.list_slug && (a.list_slug = r.list_slug))
+                            : t.user_mentions.push(r);
                     }
                     return t;
                 },
@@ -1122,13 +1123,13 @@ document.body.addEventListener("click", function (e) {
                     for (
                         var i = t.urls,
                             n = 0,
-                            s = (i = (i = (i = i.concat(t.media)).concat(t.user_mentions)).concat(
+                            s = (i = (i = (i = (i = i.concat(t.media)).concat(t.user_mentions)).concat(
                                 t.hashtags
-                            )).length;
+                            )).concat(t.cashtags || [])).length;
                         n < s;
                         n++
                     )
-                        if (e.indices[0] < i[n].indices[1] && e.indices[1] > i[n].indices[0])
+                        if (i[n] && e.indices[0] < i[n].indices[1] && e.indices[1] > i[n].indices[0])
                             return i[n];
                     return null;
                 },
