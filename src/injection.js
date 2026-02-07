@@ -189,8 +189,9 @@ async function main() {
 
     // FIXED: Use MutationObserver for account injection instead of polling
     function injectAccountObserver() {
-        if (document.querySelector('a[data-title="Accounts"]')) {
-            attachAccountListener(document.querySelector('a[data-title="Accounts"]'));
+        const accountsBtn = document.querySelector('a[data-title="Accounts"]');
+        if (accountsBtn) {
+            attachAccountListener(accountsBtn);
             return;
         }
 
